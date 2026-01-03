@@ -1,0 +1,283 @@
+.caddie-turns-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: calc(100vh - 200px);
+}
+
+.turns-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.turns-header h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+}
+
+.turns-header .subtitle {
+  font-size: 1rem;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+.turns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* List Turn Section */
+.list-turn-section {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #27ae60;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.list-turn-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.list-turn-section.empty {
+  opacity: 0.6;
+  border-left-color: #bdc3c7;
+}
+
+.list-header {
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 1rem;
+}
+
+.list-header h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Current Turn Section */
+.current-turn-wrapper {
+  margin-bottom: 2rem;
+}
+
+.current-turn {
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  border-radius: 10px;
+  padding: 1.5rem;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+}
+
+.current-turn.empty-turn {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  box-shadow: 0 4px 10px rgba(149, 165, 166, 0.3);
+}
+
+.current-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  opacity: 0.9;
+}
+
+.current-caddie-badge {
+  padding: 1rem;
+}
+
+.current-caddie-badge.empty {
+  opacity: 0.8;
+}
+
+.current-caddie-badge .caddie-name {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  word-break: break-word;
+}
+
+.current-caddie-badge .caddie-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* Queue Section */
+.queue-section {
+  margin-top: 1.5rem;
+}
+
+.queue-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+}
+
+.queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #3498db;
+  transition: background-color 0.2s ease;
+}
+
+.queue-item:hover {
+  background-color: #ecf0f1;
+}
+
+.position-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.queue-caddie-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.queue-caddie-name {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  word-break: break-word;
+}
+
+/* Empty Message */
+.empty-message {
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+/* Refresh Indicator */
+.refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.refresh-indicator .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #27ae60;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .caddie-turns-container {
+    padding: 1rem;
+  }
+
+  .turns-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .turns-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .list-turn-section {
+    padding: 1.5rem;
+  }
+
+  .current-caddie-badge .caddie-name {
+    font-size: 1.5rem;
+  }
+
+  .position-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .queue-caddie-name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .caddie-turns-container {
+    padding: 0.75rem;
+  }
+
+  .turns-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .turns-header .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .list-turn-section {
+    padding: 1rem;
+  }
+
+  .current-caddie-badge .caddie-name {
+    font-size: 1.3rem;
+  }
+
+  .current-caddie-badge .caddie-status {
+    font-size: 0.8rem;
+  }
+
+  .queue-item {
+    padding: 0.75rem;
+  }
+
+  .position-badge {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+
+  .queue-caddie-name {
+    font-size: 0.95rem;
+  }
+}
