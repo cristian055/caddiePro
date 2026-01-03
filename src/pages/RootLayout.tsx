@@ -47,7 +47,7 @@ export const RootLayout: React.FC = () => {
       </main>
 
       <footer className="app-footer">
-        <p>© 2025 CaddiePro - Sistema desarrollado por Berracode</p>
+        <p>© 2025 CaddiePro - Sistema desarrollado por <a href="https://berracode.com/"  rel="noopener noreferrer">Berracode</a></p>
       </footer>
     </div>
   );
