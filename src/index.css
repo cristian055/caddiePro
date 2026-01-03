@@ -1,3 +1,5 @@
+@import './styles/tokens.css';
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -63,10 +65,40 @@ button {
   cursor: pointer;
   transition: all 0.2s;
 }
-}
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Button utilities */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: var(--type-sm);
+}
+
+.btn:focus {
+  outline: 3px solid rgba(59,130,246,0.16);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  filter: brightness(0.95);
 }
 
 @media (prefers-color-scheme: light) {

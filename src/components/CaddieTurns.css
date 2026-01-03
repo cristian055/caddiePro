@@ -1,6 +1,6 @@
 .caddie-turns-container {
-  padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: var(--space-6);
+  background: linear-gradient(135deg, var(--color-bg) 0%, #c3cfe2 100%);
   min-height: calc(100vh - 200px);
 }
 
@@ -10,32 +10,32 @@
 }
 
 .turns-header h1 {
-  font-size: 2.5rem;
+  font-size: var(--type-xxl);
   color: #2c3e50;
   margin: 0 0 0.5rem 0;
 }
 
 .turns-header .subtitle {
-  font-size: 1rem;
-  color: #7f8c8d;
+  font-size: var(--type-md);
+  color: var(--color-muted);
   margin: 0;
 }
 
 .turns-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
 }
 
 /* List Turn Section */
 .list-turn-section {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border-left: 5px solid #27ae60;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--elevation-1);
+  border-left: 5px solid var(--color-success);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .list-turn-section:hover {
@@ -49,9 +49,9 @@
 }
 
 .list-header {
-  margin-bottom: 1.5rem;
-  border-bottom: 2px solid #ecf0f1;
-  padding-bottom: 1rem;
+  margin-bottom: var(--space-4);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: var(--space-3);
 }
 
 .list-header h2 {
@@ -66,12 +66,12 @@
 }
 
 .current-turn {
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-  border-radius: 10px;
-  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--color-success) 0%, #229954 100%);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
   color: white;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.18);
 }
 
 .current-turn.empty-turn {
@@ -133,11 +133,11 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: var(--space-3);
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border-left: 3px solid #3498db;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .queue-item:hover {

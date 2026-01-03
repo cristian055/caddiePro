@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from './ui/Icon';
 import type { ListNumber } from '../types';
 import './Messaging.css';
 
@@ -26,7 +27,7 @@ export const Messaging: React.FC = () => {
 
   return (
     <div className="messaging">
-      <h2>💬 Comunicación WhatsApp</h2>
+      <h2><Icon name="message" className="title-icon" /> Comunicación WhatsApp</h2>
 
       <div className="list-selector">
         <label>Seleccionar Lista:</label>
@@ -43,14 +44,14 @@ export const Messaging: React.FC = () => {
 
       {nextCaddie ? (
         <div className="message-section">
-          <h3>⛳ Próximo Caddie en Lista {selectedList}</h3>
+          <h3><Icon name="golf" className="inline-icon" /> Próximo Caddie en Lista {selectedList}</h3>
           <div className="caddie-highlight">
             <h2>{nextCaddie.name}</h2>
             <span className="list-badge">Lista {selectedList}</span>
           </div>
 
           <div className="message-preview">
-            <h4>📝 Previsualización del Mensaje:</h4>
+            <h4><Icon name="clipboard" className="inline-icon" /> Previsualización del Mensaje:</h4>
             <textarea
               value={messageTemplate || generateMessage()}
               onChange={(e) => setMessageTemplate(e.target.value)}
@@ -60,7 +61,7 @@ export const Messaging: React.FC = () => {
           </div>
 
           <button onClick={handleSendWhatsApp} className="btn btn-large btn-whatsapp">
-            📲 Enviar por WhatsApp
+            <Icon name="phone" className="btn-icon" /> Enviar por WhatsApp
           </button>
         </div>
       ) : (
@@ -70,7 +71,7 @@ export const Messaging: React.FC = () => {
       )}
 
       <div className="quick-templates">
-        <h4>🎯 Plantillas Rápidas</h4>
+        <h4><Icon name="list" className="inline-icon" /> Plantillas Rápidas</h4>
         <div className="template-buttons">
           <button
             onClick={() => setMessageTemplate(`⛳ *Turno Actual Lista ${selectedList}*: Va el caddie ${nextCaddie?.name || 'Próximo'} 👍`)}

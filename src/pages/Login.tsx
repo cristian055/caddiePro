@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { Button } from '../components/ui/Button';
 import './Login.css';
 
 export const Login: React.FC = () => {
@@ -34,7 +35,7 @@ export const Login: React.FC = () => {
         />
         {error && <div className="error">{error}</div>}
         <div className="actions">
-          <button type="submit" className="btn btn-primary">Entrar</button>
+          <Button type="submit" variant="primary">Entrar</Button>
         </div>
       </form>
     </div>

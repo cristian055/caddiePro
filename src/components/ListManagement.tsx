@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from './ui/Icon';
 import type { ListNumber } from '../types';
 import './ListManagement.css';
 
@@ -11,7 +12,7 @@ export const ListManagement: React.FC = () => {
 
     return (
       <div key={listNumber} className="list-container">
-        <h3>⛳ Lista {listNumber}</h3>
+        <h3><Icon name="golf" className="inline-icon" /> Lista {listNumber}</h3>
         <div className="caddies-queue">
           {caddies.length === 0 ? (
             <p className="empty-message">No hay caddies disponibles</p>
@@ -26,12 +27,12 @@ export const ListManagement: React.FC = () => {
                   </span>
                 </div>
                 <div className="actions">
-                  {caddie.status === 'Disponible' && index === 0 && (
+                      {caddie.status === 'Disponible' && index === 0 && (
                     <button
                       onClick={() => markSalioACargar(caddie.id)}
                       className="btn btn-large btn-success"
                     >
-                      ✅ Salió a Cargar
+                      <Icon name="clipboard" className="btn-icon" /> Salió a Cargar
                     </button>
                   )}
                   {caddie.status === 'En campo' && (
@@ -39,7 +40,7 @@ export const ListManagement: React.FC = () => {
                       onClick={() => markRetorno(caddie.id)}
                       className="btn btn-large btn-warning"
                     >
-                      🔄 Retorno
+                      <Icon name="arrow-left" className="btn-icon" /> Retorno
                     </button>
                   )}
                 </div>
@@ -53,7 +54,7 @@ export const ListManagement: React.FC = () => {
 
   return (
     <div className="list-management">
-      <h2>📊 Gestión de Listas y Turnos</h2>
+      <h2><Icon name="chart" className="title-icon" /> Gestión de Listas y Turnos</h2>
       <div className="lists-grid">
         {renderList(1)}
         {renderList(2)}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from './ui/Icon';
 import type { ListNumber } from '../types';
 import './CaddieTurns.css';
 
@@ -22,7 +23,7 @@ export const CaddieTurns: React.FC = () => {
     if (caddies.length === 0) {
       return (
         <div key={listNumber} className="list-turn-section empty">
-          <h2>⛳ Lista {listNumber}</h2>
+          <h2><Icon name="golf" className="inline-icon" /> Lista {listNumber}</h2>
           <p className="empty-message">No hay caddies en esta lista</p>
         </div>
       );
@@ -36,7 +37,7 @@ export const CaddieTurns: React.FC = () => {
     return (
       <div key={listNumber} className="list-turn-section">
         <div className="list-header">
-          <h2>⛳ Lista {listNumber}</h2>
+          <h2><Icon name="golf" className="inline-icon" /> Lista {listNumber}</h2>
         </div>
 
         {/* Current Turn Section */}
@@ -83,7 +84,7 @@ export const CaddieTurns: React.FC = () => {
   return (
     <div className="caddie-turns-container" key={refreshKey}>
       <div className="turns-header">
-        <h1>📋 Turnos Actuales</h1>
+        <h1><Icon name="clipboard" className="title-icon" size={22} /> Turnos Actuales</h1>
         <p className="subtitle">Estado en tiempo real de los caddies</p>
       </div>
 

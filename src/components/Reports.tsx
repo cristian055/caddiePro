@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from './ui/Icon';
 import './Reports.css';
 
 export const Reports: React.FC = () => {
@@ -19,33 +20,33 @@ export const Reports: React.FC = () => {
 
   return (
     <div className="reports">
-      <h2>📈 Reportes y Cierre Diario</h2>
+      <h2><Icon name="chart" className="title-icon" /> Reportes y Cierre Diario</h2>
 
       <div className="date-info">
-        <p>📅 Fecha: <strong>{state.currentDate}</strong></p>
+        <p><Icon name="chart" className="inline-icon" /> Fecha: <strong>{state.currentDate}</strong></p>
       </div>
 
       <div className="stats-grid">
         <div className="stat-card">
-          <h4>📊 Turnos Totales</h4>
+          <h4><Icon name="chart" className="inline-icon" /> Turnos Totales</h4>
           <p className="stat-value">{totalTurns}</p>
         </div>
         <div className="stat-card">
-          <h4>✅ Presente</h4>
+          <h4><Icon name="people" className="inline-icon" /> Presente</h4>
           <p className="stat-value">{presentCount}</p>
         </div>
         <div className="stat-card">
-          <h4>🚨 Llegó Tarde</h4>
+          <h4><Icon name="clipboard" className="inline-icon" /> Llegó Tarde</h4>
           <p className="stat-value">{lateCount}</p>
         </div>
         <div className="stat-card">
-          <h4>✕ No Vino</h4>
+          <h4><Icon name="clipboard" className="inline-icon" /> No Vino</h4>
           <p className="stat-value">{absentCount}</p>
         </div>
       </div>
 
       <div className="attendance-table">
-        <h3>📋 Registro de Asistencia</h3>
+        <h3><Icon name="clipboard" className="inline-icon" /> Registro de Asistencia</h3>
         {todayRecords.length === 0 ? (
           <p className="empty-message">No hay registros de asistencia para hoy</p>
         ) : (
@@ -79,18 +80,18 @@ export const Reports: React.FC = () => {
       </div>
 
       <div className="export-section">
-        <h3>📥 Exportar Datos</h3>
+        <h3><Icon name="clipboard" className="inline-icon" /> Exportar Datos</h3>
         <button onClick={exportToCSV} className="btn btn-large btn-export">
-          💾 Descargar CSV
+          <Icon name="clipboard" className="btn-icon" /> Descargar CSV
         </button>
         <p className="help-text">El archivo CSV incluye todos los registros de asistencia y turnos del día.</p>
       </div>
 
       <div className="reset-section">
-        <h3>🔄 Cierre Diario</h3>
+        <h3><Icon name="arrow-left" className="inline-icon" /> Cierre Diario</h3>
         {showConfirmReset ? (
           <div className="confirm-dialog">
-            <p>⚠️ ¿Está seguro de que desea cerrar el día actual?</p>
+            <p>¿Está seguro de que desea cerrar el día actual?</p>
             <p className="warning-text">Esta acción limpiará los turnos activos y reiniciará las listas para un nuevo día.</p>
             <div className="button-group">
               <button onClick={handleResetDaily} className="btn btn-danger">
@@ -103,7 +104,7 @@ export const Reports: React.FC = () => {
           </div>
         ) : (
           <button onClick={() => setShowConfirmReset(true)} className="btn btn-large btn-warning">
-            🔐 Cerrar Día
+            <Icon name="lock" className="btn-icon" /> Cerrar Día
           </button>
         )}
       </div>

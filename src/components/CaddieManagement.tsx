@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from './ui/Icon';
 import type { ListNumber } from '../types';
 import './CaddieManagement.css';
 
@@ -40,7 +41,7 @@ export const CaddieManagement: React.FC = () => {
 
   return (
     <div className="caddie-management">
-      <h2>📋 Gestión de Caddies</h2>
+      <h2><Icon name="clipboard" className="title-icon" /> Gestión de Caddies</h2>
 
       <div className="add-caddie-form">
         <input
@@ -61,7 +62,7 @@ export const CaddieManagement: React.FC = () => {
           <option value={3}>Lista 3</option>
         </select>
         <button onClick={handleAddCaddie} className="btn btn-primary">
-          ➕ Agregar
+          <Icon name="list" className="btn-icon" /> Agregar
         </button>
       </div>
 

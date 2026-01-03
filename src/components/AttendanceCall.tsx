@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import Icon from './ui/Icon';
 import type { ListNumber, AttendanceStatus } from '../types';
 import './AttendanceCall.css';
 
@@ -36,7 +37,7 @@ export const AttendanceCall: React.FC = () => {
 
   return (
     <div className="attendance-call">
-      <h2>📞 Llamado a Lista</h2>
+      <h2><Icon name="phone" className="title-icon" /> Llamado a Lista</h2>
 
       <div className="list-selector">
         <label>Seleccionar Lista:</label>
@@ -54,7 +55,7 @@ export const AttendanceCall: React.FC = () => {
       <div className="time-config">
         {isConfiguringTimes ? (
           <div className="time-form">
-            <h4>⚙️ Configurar Horas de Llamado</h4>
+            <h4><Icon name="settings" className="inline-icon" /> Configurar Horas de Llamado</h4>
             {tempSettings.map(setting => (
               <div key={setting.listNumber} className="time-input-group">
                 <label>Lista {setting.listNumber}:</label>
@@ -77,9 +78,9 @@ export const AttendanceCall: React.FC = () => {
           </div>
         ) : (
           <div className="time-display">
-            <p>⏰ Hora de llamado Lista {selectedList}: <strong>{currentListSettings?.callTime}</strong></p>
+            <p>Hora de llamado Lista {selectedList}: <strong>{currentListSettings?.callTime}</strong></p>
             <button onClick={() => setIsConfiguringTimes(true)} className="btn btn-edit">
-              ✎ Configurar Horas
+              <Icon name="settings" className="btn-icon" /> Configurar Horas
             </button>
           </div>
         )}
