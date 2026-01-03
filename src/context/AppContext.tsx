@@ -5,6 +5,7 @@ const STORAGE_KEY = 'caddiePro_state';
 
 interface AppContextType {
   state: AppState;
+  isAdmin: boolean;
   addCaddie: (name: string, list: ListNumber) => void;
   editCaddie: (id: string, name: string, list: ListNumber) => void;
   deleteCaddie: (id: string) => void;
@@ -15,6 +16,8 @@ interface AppContextType {
   getListCaddies: (list: ListNumber) => Caddie[];
   exportToCSV: () => void;
   resetDaily: () => void;
+  loginAdmin: (password: string) => boolean;
+  logoutAdmin: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -39,11 +42,43 @@ const getInitialState = (): AppState => {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AppState>(getInitialState());
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('caddiePro_isAdmin');
+      return stored === '1';
+    } catch {
+      return false;
+    }
+  });
 
   // Persist state to localStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
+
+  // persist admin flag
+  useEffect(() => {
+    try {
+      localStorage.setItem('caddiePro_isAdmin', isAdmin ? '1' : '0');
+    } catch {
+      // ignore
+    }
+  }, [isAdmin]);
+
+  // Basic client-side admin login (client-only). Change this password as needed.
+  const ADMIN_PASSWORD = 'admin123';
+
+  const loginAdmin = (password: string) => {
+    if (password === ADMIN_PASSWORD) {
+      setIsAdmin(true);
+      return true;
+    }
+    return false;
+  };
+
+  const logoutAdmin = () => {
+    setIsAdmin(false);
+  };
 
   const addCaddie = (name: string, list: ListNumber) => {
     const newCaddie: Caddie = {
@@ -200,6 +235,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const value: AppContextType = {
     state,
+    isAdmin,
     addCaddie,
     editCaddie,
     deleteCaddie,
@@ -210,6 +246,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     getListCaddies,
     exportToCSV,
     resetDaily,
+    loginAdmin,
+    logoutAdmin,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

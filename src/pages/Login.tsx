@@ -1,103 +1,44 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, type UserRole } from '../context/AuthContext';
+import { useApp } from '../context/AppContext';
 import './Login.css';
 
 export const Login: React.FC = () => {
-  const [name, setName] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const { loginAdmin } = useApp();
   const navigate = useNavigate();
 
-  const handleLogin = (role: UserRole) => {
-    if (!name.trim()) {
-      setError('Por favor ingresa tu nombre');
-      return;
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const ok = loginAdmin(password);
+    if (ok) {
+      setError(null);
+      navigate('/dashboard');
+    } else {
+      setError('Contraseña incorrecta');
     }
-
-    setError('');
-    setIsLoading(true);
-    setSelectedRole(role);
-
-    // Simulate a small delay for better UX
-    setTimeout(() => {
-      login(name, role);
-      // Redirect based on role
-      if (role === 'caddie') {
-        navigate('/turns');
-      } else {
-        navigate('/');
-      }
-      setIsLoading(false);
-    }, 500);
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>⛳ CaddiePro</h1>
-          <p className="subtitle">Sistema de Gestión de Turnos de Caddies</p>
+    <div className="login-page">
+      <form className="login-card" onSubmit={submit}>
+        <h2>Acceso Administrador</h2>
+        <p>Introduce la contraseña de administrador para acceder al panel.</p>
+        <input
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Contraseña"
+          aria-label="Contraseña de administrador"
+        />
+        {error && <div className="error">{error}</div>}
+        <div className="actions">
+          <button type="submit" className="btn btn-primary">Entrar</button>
         </div>
-
-        <div className="login-content">
-          <div className="form-group">
-            <label htmlFor="name">¿Cuál es tu nombre?</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                setError('');
-              }}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && name.trim()) {
-                  handleLogin('caddie');
-                }
-              }}
-              placeholder="Ingresa tu nombre"
-              className="name-input"
-              disabled={isLoading}
-              autoFocus
-            />
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <div className="role-selection">
-            <p className="role-label">Selecciona tu rol:</p>
-            <div className="role-buttons">
-              <button
-                onClick={() => handleLogin('caddie')}
-                disabled={!name.trim() || isLoading}
-                className={`role-button caddie-button ${
-                  selectedRole === 'caddie' && isLoading ? 'loading' : ''
-                }`}
-              >
-                <span className="role-icon">👨‍💼</span>
-                <span className="role-text">Caddie</span>
-              </button>
-              <button
-                onClick={() => handleLogin('admin')}
-                disabled={!name.trim() || isLoading}
-                className={`role-button admin-button ${
-                  selectedRole === 'admin' && isLoading ? 'loading' : ''
-                }`}
-              >
-                <span className="role-icon">👨‍💻</span>
-                <span className="role-text">Administrador</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="login-footer">
-          <p>© 2025 CaddiePro - Sistema desarrollado por <a href="https://berracode.com/" target="_blank" rel="noopener noreferrer">Berracode</a></p>
-        </div>
-      </div>
+      </form>
     </div>
   );
 };
+
+// no default export; use named export `Login`

@@ -1,87 +1,35 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { Login } from './pages/Login';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { RootLayout } from './pages/RootLayout';
-import { Dashboard } from './pages/Dashboard';
 import { TurnsPage } from './pages/TurnsPage';
+import { Dashboard } from './pages/Dashboard';
+import { Login } from './pages/Login';
+import { AppProvider } from './context/AppContext';
 import './App.css';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <AuthProvider>
+    <AppProvider>
+      <Router>
         <Routes>
-          {/* Public route */}
-          <Route path="/login" element={<Login />} />
+          <Route element={<RootLayout />}>
+            {/* Main default page - Turns */}
+            <Route path="/" element={<TurnsPage />} />
+            <Route path="/turns" element={<TurnsPage />} />
 
-          {/* Protected routes */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <RootLayout />
-              </ProtectedRoute>
-            }
-          >
-            {/* Admin routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/caddies"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/attendance"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/messaging"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/reports"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+            {/* Login for admin */}
+            <Route path="/login" element={<Login />} />
 
-            {/* Caddie route */}
-            <Route
-              path="/turns"
-              element={
-                <ProtectedRoute requiredRole="caddie">
-                  <TurnsPage />
-                </ProtectedRoute>
-              }
-            />
+            {/* Dashboard pages - Admin access */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/caddies" element={<Dashboard />} />
+            <Route path="/attendance" element={<Dashboard />} />
+            <Route path="/messaging" element={<Dashboard />} />
+            <Route path="/reports" element={<Dashboard />} />
           </Route>
-
-          {/* Default redirect */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AppProvider>
   );
 };
 

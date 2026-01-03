@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { AppProvider } from '../context/AppContext';
 import { CaddieManagement } from '../components/CaddieManagement';
 import { ListManagement } from '../components/ListManagement';
 import { AttendanceCall } from '../components/AttendanceCall';
@@ -43,9 +42,5 @@ export const Dashboard: React.FC = () => {
 
   const currentPage = getPageFromPath(location.pathname);
 
-  return (
-    <AppProvider>
-      <DashboardContent currentPage={currentPage} />
-    </AppProvider>
-  );
+  return <DashboardContent currentPage={currentPage} />;
 };

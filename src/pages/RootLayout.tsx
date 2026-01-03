@@ -1,54 +1,62 @@
 import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useApp } from '../context/AppContext';
 import './RootLayout.css';
 
 export const RootLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { isAdmin, logoutAdmin } = useApp();
 
   // Check if current route is the turns page
-  const isTurnsPage = location.pathname === '/turns';
+  const isTurnsPage = location.pathname === '/' || location.pathname === '/turns';
+  const isDashboard = isAdmin && !isTurnsPage;
 
-  // Navigation items (only show for admins)
+  // Navigation items (dashboard pages)
   const navItems = [
-    { path: '/', label: '📊 Listas' },
+    { path: '/dashboard', label: '📊 Listas' },
     { path: '/caddies', label: '👥 Caddies' },
     { path: '/attendance', label: '📞 Llamado' },
     { path: '/messaging', label: '💬 Mensajes' },
     { path: '/reports', label: '📈 Reportes' },
   ];
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
     <div className="app-container">
       <header className="app-header">
         <div className="header-content">
-          <div className="header-left">
-            <h1>⛳ CaddiePro MVP</h1>
-            <p className="tagline">Sistema de Gestión de Turnos de Caddies</p>
-          </div>
-          {user && (
-            <div className="header-right">
-              <span className="user-info">
-                👤 {user.name} <span className="user-badge">{user.role === 'caddie' ? 'Caddie' : 'Admin'}</span>
-              </span>
-              <button className="logout-button" onClick={handleLogout}>
-                Salir
-              </button>
-            </div>
-          )}
+          <h1>⛳ CaddiePro MVP</h1>
+          <p className="tagline">Sistema de Gestión de Turnos de Caddies</p>
         </div>
+        
+        {isTurnsPage && (
+          <button
+            className="admin-toggle-btn"
+            onClick={() => {
+              if (isAdmin) {
+                logoutAdmin();
+                navigate('/');
+              } else {
+                navigate('/login');
+              }
+            }}
+            title={isAdmin ? 'Salir del modo administrador' : 'Acceso administrador'}
+          >
+            {isAdmin ? '🔒 Salir Admin' : '⚙️ Admin'}
+          </button>
+        )}
       </header>
 
-      {/* Show navigation only on non-turns pages and for admins */}
-      {!isTurnsPage && user?.role === 'admin' && (
+      {/* Show navigation only on admin/dashboard pages */}
+      {isDashboard && (
         <nav className="main-nav">
+          <button 
+            className="nav-button home-btn"
+            onClick={() => navigate('/')}
+            title="Volver a Turnos"
+          >
+            ← Turnos
+          </button>
           {navItems.map(item => (
             <button
               key={item.path}
