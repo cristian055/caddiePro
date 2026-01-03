@@ -1,6 +1,7 @@
 export type ListNumber = 1 | 2 | 3;
 export type CaddieStatus = 'Disponible' | 'En campo' | 'Ausente';
 export type AttendanceStatus = 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso';
+export type ListOrder = 'ascendente' | 'descendente';
 
 export interface Caddie {
   id: string;
@@ -36,6 +37,9 @@ export interface AttendanceRecord {
 export interface ListSettings {
   listNumber: ListNumber;
   callTime: string; // HH:mm format
+  order: ListOrder;
+  rangeStart?: number;
+  rangeEnd?: number;
 }
 
 export interface DailyReport {

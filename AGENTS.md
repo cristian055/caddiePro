@@ -27,7 +27,9 @@ No test framework is currently configured.
 ### Component Structure
 - Use `React.FC<T>` for functional components with explicit type parameter
 - Prefer named exports over default exports
-- Component files include a corresponding `.css` file with same name
+- Component files MUST include a corresponding `.css` file with same name
+- Style and logic MUST be in separate files - no inline styles or style objects
+- Create custom hooks in `src/hooks/` for reusable logic (prefix with `use`)
 - Use descriptive prop interfaces/types
 
 ```tsx

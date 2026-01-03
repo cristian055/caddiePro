@@ -28,10 +28,17 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.list-container h3 {
+.list-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.list-header-row h3 {
   font-size: 24px;
   color: #1a472a;
-  margin-bottom: 20px;
+  margin: 0;
   border-bottom: 4px solid #2d6a4f;
   padding-bottom: 10px;
 }
@@ -158,4 +165,77 @@
   padding: 40px 20px;
   font-style: italic;
   font-size: 16px;
+}
+
+.btn-config {
+  background: #607D8B;
+  color: white;
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.btn-config:hover {
+  background: #455A64;
+}
+
+.list-config {
+  background: #f0f4f8;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 2px solid #2d6a4f;
+}
+
+.config-section {
+  margin-bottom: 16px;
+}
+
+.config-section:last-child {
+  margin-bottom: 0;
+}
+
+.config-section h4 {
+  font-size: 16px;
+  color: #1a472a;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.config-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.range-inputs {
+  align-items: center;
+}
+
+.range-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.input-sm {
+  width: 70px;
+  padding: 6px 10px;
+}
+
+.config-hint {
+  font-size: 13px;
+  color: #666;
+  margin: 8px 0 0 0;
+  font-style: italic;
+}
+
+.config-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #d0d7de;
 }

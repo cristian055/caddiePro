@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Caddie, ListNumber, AttendanceRecord, ListSettings, Turn, AppState } from '../types';
+import type { Caddie, ListNumber, AttendanceRecord, ListSettings, Turn, AppState, ListOrder } from '../types';
 
 const STORAGE_KEY = 'caddiePro_state';
 
@@ -13,6 +13,8 @@ interface AppContextType {
   markRetorno: (caddieId: string) => void;
   updateAttendance: (caddieId: string, status: 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso') => void;
   setListSettings: (settings: ListSettings[]) => void;
+  setListOrder: (listNumber: ListNumber, order: ListOrder) => void;
+  setListRange: (listNumber: ListNumber, rangeStart?: number, rangeEnd?: number) => void;
   getListCaddies: (list: ListNumber) => Caddie[];
   exportToCSV: () => void;
   resetDaily: () => void;
@@ -32,9 +34,9 @@ const getInitialState = (): AppState => {
     turns: [],
     attendance: [],
     listSettings: [
-      { listNumber: 1, callTime: '06:00' },
-      { listNumber: 2, callTime: '08:00' },
-      { listNumber: 3, callTime: '10:00' },
+      { listNumber: 1, callTime: '06:00', order: 'ascendente' },
+      { listNumber: 2, callTime: '08:00', order: 'ascendente' },
+      { listNumber: 3, callTime: '10:00', order: 'ascendente' },
     ],
     currentDate: new Date().toISOString().split('T')[0],
   };
@@ -192,9 +194,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
+  const setListOrder = (listNumber: ListNumber, order: ListOrder) => {
+    setState(prev => ({
+      ...prev,
+      listSettings: prev.listSettings.map(s =>
+        s.listNumber === listNumber ? { ...s, order } : s
+      ),
+    }));
+  };
+
+  const setListRange = (listNumber: ListNumber, rangeStart?: number, rangeEnd?: number) => {
+    setState(prev => ({
+      ...prev,
+      listSettings: prev.listSettings.map(s =>
+        s.listNumber === listNumber ? { ...s, rangeStart, rangeEnd } : s
+      ),
+    }));
+  };
+
   const getListCaddies = (list: ListNumber): Caddie[] => {
-    return state.caddies.filter(c => c.list === list && c.status !== 'Ausente').sort((a, b) => {
-      // Sort by status: Disponible first, then En campo
+    const listSettings = state.listSettings.find(s => s.listNumber === list);
+    let caddies = state.caddies.filter(c => c.list === list && c.status !== 'Ausente');
+
+    if (listSettings && listSettings.rangeStart !== undefined && listSettings.rangeEnd !== undefined) {
+      const rangeStart = listSettings.rangeStart - 1;
+      const rangeEnd = listSettings.rangeEnd - 1;
+      caddies = caddies.filter((_, index) => index >= rangeStart && index <= rangeEnd);
+    }
+
+    if (listSettings?.order === 'descendente') {
+      caddies = [...caddies].reverse();
+    }
+
+    return caddies.sort((a, b) => {
       if (a.status === 'Disponible' && b.status !== 'Disponible') return -1;
       if (a.status !== 'Disponible' && b.status === 'Disponible') return 1;
       return 0;
@@ -243,6 +275,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     markRetorno,
     updateAttendance,
     setListSettings,
+    setListOrder,
+    setListRange,
     getListCaddies,
     exportToCSV,
     resetDaily,
