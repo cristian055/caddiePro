@@ -1,0 +1,178 @@
+.messaging {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.messaging h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #1a472a;
+}
+
+.list-selector {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-selector label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+}
+
+.list-selector select {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.message-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.message-section h3 {
+  font-size: 20px;
+  color: #1a472a;
+  margin: 0 0 15px 0;
+}
+
+.caddie-highlight {
+  background: linear-gradient(135deg, #2d6a4f, #1a472a);
+  color: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+}
+
+.caddie-highlight h2 {
+  margin: 0 0 10px 0;
+  font-size: 32px;
+  color: white;
+}
+
+.list-badge {
+  display: inline-block;
+  background: #FFC107;
+  color: #333;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.message-preview {
+  margin-bottom: 20px;
+}
+
+.message-preview h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.message-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.message-textarea:focus {
+  outline: none;
+  border-color: #2d6a4f;
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+}
+
+.btn-whatsapp {
+  width: 100%;
+  padding: 18px;
+  background: #25D366;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+
+.btn-whatsapp:hover {
+  background: #1AAC52;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-whatsapp:active {
+  transform: translateY(0);
+}
+
+.quick-templates {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quick-templates h4 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: #1a472a;
+}
+
+.template-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .template-buttons {
+    flex-direction: row;
+  }
+}
+
+.btn-template {
+  padding: 12px 16px;
+  background: #E8F5E9;
+  color: #2d6a4f;
+  border: 2px solid #2d6a4f;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.2s;
+}
+
+.btn-template:hover {
+  background: #2d6a4f;
+  color: white;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 40px 20px;
+  font-style: italic;
+  font-size: 16px;
+}

@@ -1,0 +1,224 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import type { Caddie, ListNumber, AttendanceRecord, ListSettings, Turn, AppState } from '../types';
+
+const STORAGE_KEY = 'caddiePro_state';
+
+interface AppContextType {
+  state: AppState;
+  addCaddie: (name: string, list: ListNumber) => void;
+  editCaddie: (id: string, name: string, list: ListNumber) => void;
+  deleteCaddie: (id: string) => void;
+  markSalioACargar: (caddieId: string) => void;
+  markRetorno: (caddieId: string) => void;
+  updateAttendance: (caddieId: string, status: 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso') => void;
+  setListSettings: (settings: ListSettings[]) => void;
+  getListCaddies: (list: ListNumber) => Caddie[];
+  exportToCSV: () => void;
+  resetDaily: () => void;
+}
+
+const AppContext = createContext<AppContextType | undefined>(undefined);
+
+const getInitialState = (): AppState => {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return {
+    caddies: [],
+    turns: [],
+    attendance: [],
+    listSettings: [
+      { listNumber: 1, callTime: '06:00' },
+      { listNumber: 2, callTime: '08:00' },
+      { listNumber: 3, callTime: '10:00' },
+    ],
+    currentDate: new Date().toISOString().split('T')[0],
+  };
+};
+
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, setState] = useState<AppState>(getInitialState());
+
+  // Persist state to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }, [state]);
+
+  const addCaddie = (name: string, list: ListNumber) => {
+    const newCaddie: Caddie = {
+      id: `caddie_${Date.now()}`,
+      name,
+      list,
+      status: 'Disponible',
+      createdAt: new Date().toISOString(),
+    };
+    setState(prev => ({
+      ...prev,
+      caddies: [...prev.caddies, newCaddie],
+    }));
+  };
+
+  const editCaddie = (id: string, name: string, list: ListNumber) => {
+    setState(prev => ({
+      ...prev,
+      caddies: prev.caddies.map(c =>
+        c.id === id ? { ...c, name, list } : c
+      ),
+    }));
+  };
+
+  const deleteCaddie = (id: string) => {
+    setState(prev => ({
+      ...prev,
+      caddies: prev.caddies.filter(c => c.id !== id),
+    }));
+  };
+
+  const markSalioACargar = (caddieId: string) => {
+    const caddie = state.caddies.find(c => c.id === caddieId);
+    if (!caddie) return;
+
+    const newTurn: Turn = {
+      id: `turn_${Date.now()}`,
+      caddieId,
+      caddieName: caddie.name,
+      listNumber: caddie.list,
+      startTime: new Date().toISOString(),
+      completed: false,
+    };
+
+    setState(prev => ({
+      ...prev,
+      caddies: prev.caddies.map(c =>
+        c.id === caddieId ? { ...c, status: 'En campo' } : c
+      ),
+      turns: [...prev.turns, newTurn],
+    }));
+  };
+
+  const markRetorno = (caddieId: string) => {
+    const caddie = state.caddies.find(c => c.id === caddieId);
+    if (!caddie || caddie.status !== 'En campo') return;
+
+    const relevantTurns = state.turns.filter(
+      t => t.caddieId === caddieId && !t.completed && t.listNumber === caddie.list
+    );
+
+    setState(prev => ({
+      ...prev,
+      caddies: prev.caddies.map(c =>
+        c.id === caddieId ? { ...c, status: 'Disponible' } : c
+      ),
+      turns: prev.turns.map(t =>
+        relevantTurns.some(rt => rt.id === t.id)
+          ? { ...t, endTime: new Date().toISOString(), completed: true }
+          : t
+      ),
+    }));
+  };
+
+  const updateAttendance = (caddieId: string, status: 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso') => {
+    const caddie = state.caddies.find(c => c.id === caddieId);
+    if (!caddie) return;
+
+    let caddieStatus: 'Disponible' | 'En campo' | 'Ausente' = 'Disponible';
+    if (status === 'No vino' || (status === 'Llegó tarde' && caddie.status === 'En campo')) {
+      caddieStatus = 'Ausente';
+    } else if (status === 'Llegó tarde') {
+      // Move to end of list
+      caddieStatus = 'Disponible';
+    }
+
+    const newRecord: AttendanceRecord = {
+      id: `attendance_${Date.now()}`,
+      caddieId,
+      caddieName: caddie.name,
+      listNumber: caddie.list,
+      date: state.currentDate,
+      status,
+      callTime: new Date().toISOString(),
+      turnsCount: state.turns.filter(t => t.caddieId === caddieId && t.completed).length,
+    };
+
+    setState(prev => ({
+      ...prev,
+      caddies: prev.caddies.map(c =>
+        c.id === caddieId ? { ...c, status: caddieStatus } : c
+      ),
+      attendance: [...prev.attendance, newRecord],
+    }));
+  };
+
+  const setListSettings = (settings: ListSettings[]) => {
+    setState(prev => ({
+      ...prev,
+      listSettings: settings,
+    }));
+  };
+
+  const getListCaddies = (list: ListNumber): Caddie[] => {
+    return state.caddies.filter(c => c.list === list && c.status !== 'Ausente').sort((a, b) => {
+      // Sort by status: Disponible first, then En campo
+      if (a.status === 'Disponible' && b.status !== 'Disponible') return -1;
+      if (a.status !== 'Disponible' && b.status === 'Disponible') return 1;
+      return 0;
+    });
+  };
+
+  const exportToCSV = () => {
+    const headers = ['Fecha', 'Nombre Caddie', 'Lista', 'Hora Entrada', 'Estado', 'Turnos Completados', 'Hora Salida'];
+    const rows = state.attendance.map(record => [
+      record.date,
+      record.caddieName,
+      record.listNumber,
+      record.callTime.split('T')[1].substring(0, 5),
+      record.status,
+      record.turnsCount,
+      record.endTime ? record.endTime.split('T')[1].substring(0, 5) : 'En curso',
+    ]);
+
+    const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reporte_${state.currentDate}.csv`;
+    a.click();
+  };
+
+  const resetDaily = () => {
+    const newDate = new Date().toISOString().split('T')[0];
+    setState(prev => ({
+      ...prev,
+      currentDate: newDate,
+      turns: [],
+      attendance: [],
+      caddies: prev.caddies.map(c => ({ ...c, status: 'Disponible' })),
+    }));
+  };
+
+  const value: AppContextType = {
+    state,
+    addCaddie,
+    editCaddie,
+    deleteCaddie,
+    markSalioACargar,
+    markRetorno,
+    updateAttendance,
+    setListSettings,
+    getListCaddies,
+    exportToCSV,
+    resetDaily,
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
+
+export const useApp = () => {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error('useApp must be used within AppProvider');
+  }
+  return context;
+};

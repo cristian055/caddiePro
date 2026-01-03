@@ -1,0 +1,191 @@
+.attendance-call {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.attendance-call h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #1a472a;
+}
+
+.list-selector {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-selector label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+  font-size: 16px;
+}
+
+.list-selector select {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.time-config {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.time-form,
+.time-display {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.time-form h4,
+.time-display h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #1a472a;
+}
+
+.time-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.time-input-group label {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.time-input-group input {
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+}
+
+.time-display p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.time-display strong {
+  color: #1a472a;
+  font-size: 18px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.button-group button {
+  flex: 1;
+}
+
+.attendance-list {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-list h3 {
+  font-size: 20px;
+  color: #1a472a;
+  margin: 0 0 15px 0;
+  border-bottom: 3px solid #2d6a4f;
+  padding-bottom: 10px;
+}
+
+.caddies-check {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.attendance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #2d6a4f;
+}
+
+@media (min-width: 640px) {
+  .attendance-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+  }
+}
+
+.caddie-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  flex: 1;
+  min-width: 150px;
+}
+
+.attendance-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .attendance-buttons {
+    flex-direction: row;
+    width: auto;
+  }
+}
+
+.attendance-buttons .btn {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  color: white;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.attendance-buttons .btn.active {
+  border: 2px solid #333;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+.btn-edit {
+  background: #2196F3;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #1976D2;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 40px 20px;
+  font-style: italic;
+}

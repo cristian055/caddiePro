@@ -1,0 +1,240 @@
+.caddie-management {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.caddie-management h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #1a472a;
+}
+
+.add-caddie-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 640px) {
+  .add-caddie-form {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .add-caddie-form input,
+  .add-caddie-form select {
+    flex: 1;
+  }
+
+  .add-caddie-form button {
+    flex: 0.5;
+  }
+}
+
+.input-field,
+.select-field {
+  padding: 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.input-field:focus,
+.select-field:focus {
+  outline: none;
+  border-color: #2d6a4f;
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+}
+
+.caddies-by-list {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .caddies-by-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.list-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-section h3 {
+  font-size: 20px;
+  color: #1a472a;
+  margin-bottom: 15px;
+  border-bottom: 3px solid #2d6a4f;
+  padding-bottom: 10px;
+}
+
+.caddies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.caddie-item {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #2d6a4f;
+  transition: all 0.2s;
+}
+
+.caddie-item:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: translateX(2px);
+}
+
+.caddie-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+@media (min-width: 640px) {
+  .caddie-info {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.caddie-name {
+  font-weight: bold;
+  font-size: 16px;
+  flex: 1;
+  color: #333;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-disponible {
+  background: #4CAF50;
+  color: white;
+}
+
+.status-en-campo {
+  background: #FFC107;
+  color: #333;
+}
+
+.status-ausente {
+  background: #F44336;
+  color: white;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .edit-form {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.edit-form input,
+.edit-form select {
+  flex: 1;
+}
+
+.btn {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: none;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: #2d6a4f;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1a472a;
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
+}
+
+.btn-success {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #388E3C;
+}
+
+.btn-danger {
+  background: #F44336;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #D32F2F;
+}
+
+.btn-secondary {
+  background: #999;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #777;
+}
+
+.btn-edit {
+  background: #2196F3;
+  color: white;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.btn-sm {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+  font-style: italic;
+}
