@@ -48,33 +48,41 @@ export const ListManagement: React.FC = () => {
     }));
   };
 
-  const handleSaveConfig = (listNumber: ListNumber) => {
+  const handleSaveConfig = async (listNumber: ListNumber) => {
     const config = configs[listNumber];
-    setListOrder(listNumber, config.selectedOrder);
+    await setListOrder(listNumber, config.selectedOrder);
     const start = config.rangeStart ? parseInt(config.rangeStart, 10) : undefined;
     const end = config.rangeEnd ? parseInt(config.rangeEnd, 10) : undefined;
-    setListRange(listNumber, start, end);
+    await setListRange(listNumber, start, end);
     setConfigs(prev => ({
       ...prev,
       [listNumber]: { ...prev[listNumber], isConfiguring: false },
     }));
   };
 
-  const handleClearRange = (listNumber: ListNumber) => {
+  const handleClearRange = async (listNumber: ListNumber) => {
     setConfigs(prev => ({
       ...prev,
       [listNumber]: { ...prev[listNumber], rangeStart: '', rangeEnd: '' },
     }));
-    setListRange(listNumber);
+    await setListRange(listNumber);
   };
 
   const renderList = (listNumber: ListNumber) => {
     const caddies = getListCaddies(listNumber);
     const listSettings = state.listSettings.find(s => s.listNumber === listNumber);
-    const totalCaddies = state.caddies.filter(c => c.list === listNumber && c.status !== 'Ausente').length;
+    const totalCaddies = state.caddies.filter(c => c.listNumber === listNumber && c.status !== 'Ausente').length;
     const config = configs[listNumber];
     const displayRangeStart = listSettings?.rangeStart?.toString() || '';
     const displayRangeEnd = listSettings?.rangeEnd?.toString() || '';
+
+    const handleMarkSalioACargar = async (caddieId: string) => {
+      await markSalioACargar(caddieId);
+    };
+
+    const handleMarkRetorno = async (caddieId: string) => {
+      await markRetorno(caddieId);
+    };
 
     return (
       <div key={listNumber} className="list-container">
@@ -167,7 +175,7 @@ export const ListManagement: React.FC = () => {
                 <div className="actions">
                       {caddie.status === 'Disponible' && index === 0 && (
                     <button
-                      onClick={() => markSalioACargar(caddie.id)}
+                      onClick={() => handleMarkSalioACargar(caddie.id)}
                       className="btn btn-large btn-success"
                     >
                       <Icon name="clipboard" className="btn-icon" /> Salió a Cargar
@@ -175,7 +183,7 @@ export const ListManagement: React.FC = () => {
                   )}
                   {caddie.status === 'En campo' && (
                     <button
-                      onClick={() => markRetorno(caddie.id)}
+                      onClick={() => handleMarkRetorno(caddie.id)}
                       className="btn btn-large btn-warning"
                     >
                       <Icon name="arrow-left" className="btn-icon" /> Retorno

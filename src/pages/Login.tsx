@@ -10,14 +10,18 @@ export const Login: React.FC = () => {
   const { loginAdmin } = useApp();
   const navigate = useNavigate();
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = loginAdmin(password);
-    if (ok) {
-      setError(null);
-      navigate('/dashboard');
-    } else {
-      setError('Contraseña incorrecta');
+    try {
+      const ok = await loginAdmin(password);
+      if (ok) {
+        setError(null);
+        navigate('/dashboard');
+      } else {
+        setError('Contraseña incorrecta');
+      }
+    } catch {
+      setError('Error de conexión con el servidor');
     }
   };
 

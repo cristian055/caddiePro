@@ -5,34 +5,19 @@ import type { ListNumber, AttendanceStatus } from '../types';
 import './AttendanceCall.css';
 
 export const AttendanceCall: React.FC = () => {
-  const { state, setListSettings, updateAttendance } = useApp();
+  const { state, updateAttendance } = useApp();
   const [selectedList, setSelectedList] = useState<ListNumber>(1);
-  const [isConfiguringTimes, setIsConfiguringTimes] = useState(false);
-  const [tempSettings, setTempSettings] = useState(state.listSettings);
-  const [checkedCaddies, setCheckedCaddies] = useState<{ [key: string]: AttendanceStatus }>({});
+  const [checkedCaddies, setCheckedCaddies] = useState<Record<string, AttendanceStatus>>({});
 
   const currentListSettings = state.listSettings.find(s => s.listNumber === selectedList);
-  const listCaddies = state.caddies.filter(c => c.list === selectedList);
+  const listCaddies = state.caddies.filter(c => c.listNumber === selectedList);
 
-  const handleSaveTimeSettings = () => {
-    setListSettings(tempSettings);
-    setIsConfiguringTimes(false);
-  };
-
-  const handleTimeChange = (listNumber: ListNumber, newTime: string) => {
-    setTempSettings(prev =>
-      prev.map(s =>
-        s.listNumber === listNumber ? { ...s, callTime: newTime } : s
-      )
-    );
-  };
-
-  const handleMarkAttendance = (caddieId: string, status: AttendanceStatus) => {
+  const handleMarkAttendance = async (caddieId: string, status: AttendanceStatus) => {
     setCheckedCaddies(prev => ({
       ...prev,
       [caddieId]: status,
     }));
-    updateAttendance(caddieId, status);
+    await updateAttendance(caddieId, status);
   };
 
   return (
@@ -52,38 +37,8 @@ export const AttendanceCall: React.FC = () => {
         </select>
       </div>
 
-      <div className="time-config">
-        {isConfiguringTimes ? (
-          <div className="time-form">
-            <h4><Icon name="settings" className="inline-icon" /> Configurar Horas de Llamado</h4>
-            {tempSettings.map(setting => (
-              <div key={setting.listNumber} className="time-input-group">
-                <label>Lista {setting.listNumber}:</label>
-                <input
-                  type="time"
-                  value={setting.callTime}
-                  onChange={(e) => handleTimeChange(setting.listNumber as ListNumber, e.target.value)}
-                  className="input-field"
-                />
-              </div>
-            ))}
-            <div className="button-group">
-              <button onClick={handleSaveTimeSettings} className="btn btn-success">
-                ✓ Guardar
-              </button>
-              <button onClick={() => setIsConfiguringTimes(false)} className="btn btn-secondary">
-                ✕ Cancelar
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="time-display">
-            <p>Hora de llamado Lista {selectedList}: <strong>{currentListSettings?.callTime}</strong></p>
-            <button onClick={() => setIsConfiguringTimes(true)} className="btn btn-edit">
-              <Icon name="settings" className="btn-icon" /> Configurar Horas
-            </button>
-          </div>
-        )}
+      <div className="time-display">
+        <p>Hora de llamado Lista {selectedList}: <strong>{currentListSettings?.callTime}</strong></p>
       </div>
 
       <div className="attendance-list">

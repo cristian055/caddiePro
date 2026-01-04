@@ -65,30 +65,78 @@ export const ComponentName: React.FC<PropsType> = ({ prop1, prop2 }) => {
 
 ### Styling
 - Plain CSS with separate `.css` files per component
+- Use CSS variables from `src/styles/tokens.css` for colors, spacing, typography
 - BEM-like class naming (e.g., `attendance-call`, `btn-primary`)
 - Use className props for additional styling
+- Mobile-first responsive design with `@media (min-width: ...)` breakpoints
+- Common breakpoints: 640px (sm), 768px (md), 1024px (lg)
 
 ### Routing
 - React Router with `BrowserRouter`, `Routes`, `Route`
 - Main routes in `src/App.tsx`
 - `useNavigate()` hook for navigation
+- `useLocation()` hook for current path detection
 
 ### Icon Components
 - Use `Icon` component from `src/components/ui/Icon.tsx`
 - Supports predefined icon names via `IconName` type
 - Props: `{ name, className?, size? }`
+- Available icons: golf, list, people, phone, message, chart, lock, settings, arrow-left, clipboard
 
 ### UI Components
 - Reusable components in `src/components/ui/`
 - Button component supports `variant?: 'primary' | 'default'`
 - Extend native HTML element types for props: `React.ButtonHTMLAttributes<HTMLButtonElement>`
+- Common button variants: btn-primary, btn-secondary, btn-success, btn-warning, btn-danger, btn-config
 
 ### Localization
 - UI text and comments in Spanish (app is for Spanish-speaking users)
 - Labels and messages in Spanish
+- Admin password: `admin123` (documented in AppContext.tsx:69)
 
 ### Idioms
 - Use `...prev` spread for immutable state updates
 - Filter and map with immutable patterns
 - Date handling: `new Date().toISOString()` for storage, split for display
 - IDs: Use timestamp-based unique IDs (e.g., `caddie_${Date.now()}`)
+- Auto-refresh intervals: use `useEffect` with `setInterval` and cleanup
+- Class name manipulation for status: `status-${status.replace(/\s+/g, '-').toLowerCase()}`
+
+### Backend API Context
+- Backend API specification in `BACKEND_API.md`
+- App currently uses localStorage (client-side only)
+- Backend will provide RESTful endpoints for persistence
+- JWT-based authentication for admin access
+- Entities: Caddies, Turns, Attendance, ListSettings, Messages, Reports
+
+### File Organization
+- Components: `src/components/` - Feature components (AttendanceCall, CaddieManagement, etc.)
+- Pages: `src/pages/` - Route-level components (Dashboard, Login, TurnsPage, RootLayout)
+- UI: `src/components/ui/` - Reusable UI components (Button, Icon)
+- Context: `src/context/` - React Context providers (AppContext.tsx)
+- Types: `src/types/index.ts` - Shared TypeScript types/interfaces
+- Styles: `src/styles/` - Global styles and design tokens (tokens.css)
+
+### localStorage Patterns
+- Use try/catch when accessing localStorage (can throw in restricted contexts)
+- Storage keys follow pattern: `caddiePro_keyname`
+- Parse JSON with fallback to default state
+- Serialize state before saving: `JSON.stringify(state)`
+- Clear specific keys, never use `localStorage.clear()`
+
+### Form Handling
+- Use controlled components with `useState` for form state
+- Handle Enter key with onKeyPress: `e.key === 'Enter' && handleSubmit()`
+- Trim whitespace from text inputs: `name.trim()`
+- Reset form after successful submission: `setName('')`
+
+### List Management Patterns
+- Filter lists with: `state.items.filter(item => condition)`
+- Update single item in array: `prev.items.map(item => item.id === id ? {...item, ...changes} : item)`
+- Add new item: `...prev, items: [...prev.items, newItem]`
+- Remove item: `...prev, items: prev.items.filter(item => item.id !== id)`
+
+### Conditional Rendering
+- Use ternary operators for simple conditions: `condition ? <A /> : <B />`
+- Use short-circuit for optional rendering: `condition && <Component />`
+- Early returns reduce nesting: `if (!data) return <EmptyState />;`

@@ -13,8 +13,8 @@ export const Reports: React.FC = () => {
   const lateCount = todayRecords.filter(r => r.status === 'Llegó tarde').length;
   const absentCount = todayRecords.filter(r => r.status === 'No vino').length;
 
-  const handleResetDaily = () => {
-    resetDaily();
+  const handleResetDaily = async () => {
+    await resetDaily();
     setShowConfirmReset(false);
   };
 
@@ -81,7 +81,7 @@ export const Reports: React.FC = () => {
 
       <div className="export-section">
         <h3><Icon name="clipboard" className="inline-icon" /> Exportar Datos</h3>
-        <button onClick={exportToCSV} className="btn btn-large btn-export">
+        <button onClick={async () => await exportToCSV()} className="btn btn-large btn-export">
           <Icon name="clipboard" className="btn-icon" /> Descargar CSV
         </button>
         <p className="help-text">El archivo CSV incluye todos los registros de asistencia y turnos del día.</p>

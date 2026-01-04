@@ -12,9 +12,9 @@ export const CaddieManagement: React.FC = () => {
   const [editName, setEditName] = useState('');
   const [editList, setEditList] = useState<ListNumber>(1);
 
-  const handleAddCaddie = () => {
+  const handleAddCaddie = async () => {
     if (name.trim()) {
-      addCaddie(name.trim(), selectedList);
+      await addCaddie(name.trim(), selectedList);
       setName('');
       setSelectedList(1);
     }
@@ -26,17 +26,17 @@ export const CaddieManagement: React.FC = () => {
     setEditList(currentList);
   };
 
-  const handleEditSave = (id: string) => {
+  const handleEditSave = async (id: string) => {
     if (editName.trim()) {
-      editCaddie(id, editName.trim(), editList);
+      await editCaddie(id, editName.trim(), editList);
       setEditingId(null);
     }
   };
 
   const caddiesByList = {
-    1: state.caddies.filter(c => c.list === 1),
-    2: state.caddies.filter(c => c.list === 2),
-    3: state.caddies.filter(c => c.list === 3),
+    1: state.caddies.filter(c => c.listNumber === 1),
+    2: state.caddies.filter(c => c.listNumber === 2),
+    3: state.caddies.filter(c => c.listNumber === 3),
   };
 
   return (
@@ -113,13 +113,13 @@ export const CaddieManagement: React.FC = () => {
                           {caddie.status}
                         </span>
                         <button
-                          onClick={() => handleEditStart(caddie.id, caddie.name, caddie.list)}
+                          onClick={() => handleEditStart(caddie.id, caddie.name, caddie.listNumber as ListNumber)}
                           className="btn btn-sm btn-edit"
                         >
                           ✎ Editar
                         </button>
                         <button
-                          onClick={() => deleteCaddie(caddie.id)}
+                          onClick={async () => await deleteCaddie(caddie.id)}
                           className="btn btn-sm btn-danger"
                         >
                           🗑️ Eliminar
