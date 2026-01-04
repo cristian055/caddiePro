@@ -1,0 +1,279 @@
+/* ===============================
+   Base Skeleton Styles
+   =============================== */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Dark variant */
+.skeleton--dark {
+  background-color: #2a2a2a;
+}
+
+/* Shimmer animation */
+.skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ===============================
+   Text Skeleton
+   =============================== */
+.skeleton-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-text__line {
+  height: 16px;
+  border-radius: 4px;
+}
+
+/* ===============================
+   Circle Skeleton
+   =============================== */
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+/* ===============================
+   Card Skeleton
+   =============================== */
+.skeleton-card {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--color-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skeleton-card__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-card__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-card__title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 8px;
+}
+
+.skeleton-card__line {
+  height: 16px;
+  width: 100%;
+}
+
+.skeleton-card__line:nth-child(2) {
+  width: 80%;
+}
+
+.skeleton-card__line:nth-child(3) {
+  width: 40%;
+}
+
+/* ===============================
+   Table Skeleton
+   =============================== */
+.skeleton-table {
+  background-color: var(--color-card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skeleton-table__header {
+  display: grid;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: var(--color-bg-light);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.skeleton-table__row {
+  display: grid;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.skeleton-table__row:last-child {
+  border-bottom: none;
+}
+
+.skeleton-table__cell {
+  height: 32px;
+}
+
+/* ===============================
+   List Skeleton
+   =============================== */
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-list__item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background-color: var(--color-card-bg);
+  border-radius: 8px;
+  align-items: center;
+}
+
+.skeleton-list__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-list__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-list__title {
+  height: 18px;
+  width: 70%;
+}
+
+.skeleton-list__subtitle {
+  height: 14px;
+  width: 40%;
+}
+
+/* ===============================
+   Button Skeleton
+   =============================== */
+.skeleton-button {
+  height: 40px;
+  border-radius: 4px;
+}
+
+/* ===============================
+   Input Skeleton
+   =============================== */
+.skeleton-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-input__label {
+  height: 14px;
+  width: 30%;
+}
+
+.skeleton-input__field {
+  height: 40px;
+  border-radius: 4px;
+}
+
+/* ===============================
+   Block Skeleton
+   =============================== */
+.skeleton-block {
+  width: 100%;
+  min-height: 100px;
+}
+
+/* ===============================
+   Loading Screen
+   =============================== */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg);
+  z-index: 9999;
+}
+
+.loading-screen__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background-color: var(--color-card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.loading-screen__spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-bg-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-screen__message {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  text-align: center;
+}
+
+/* ===============================
+   Responsive Breakpoints
+   =============================== */
+@media (max-width: 640px) {
+  .skeleton-card {
+    padding: 12px;
+  }
+
+  .skeleton-table__header,
+  .skeleton-table__row {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .skeleton-table__cell {
+    height: 28px;
+  }
+}

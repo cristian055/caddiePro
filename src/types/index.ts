@@ -95,3 +95,96 @@ export interface AppState {
   currentDate: string;
 }
 
+// DTO Types for API requests
+export interface CreateCaddieDto {
+  name: string;
+  listNumber: number;
+  phoneNumber?: string;
+  status?: CaddieStatus;
+}
+
+export interface UpdateCaddieDto {
+  name?: string;
+  listNumber?: number;
+  status?: CaddieStatus;
+}
+
+export interface CreateTurnDto {
+  caddieId: string;
+  caddieName: string;
+  listNumber: number;
+}
+
+export interface UpdateTurnDto {
+  endTime?: string;
+  completed?: boolean;
+}
+
+export interface CreateAttendanceDto {
+  caddieId: string;
+  caddieName: string;
+  listNumber: number;
+  date: string;
+  status: AttendanceStatus;
+}
+
+export interface UpdateAttendanceDto {
+  status?: AttendanceStatus;
+  arrivalTime?: string;
+  turnsCount?: number;
+  endTime?: string;
+}
+
+export interface UpdateListSettingsDto {
+  callTime?: string;
+  order?: ListOrder;
+  rangeStart?: number;
+  rangeEnd?: number;
+}
+
+export interface CreateMessageDto {
+  content: string;
+  targetList?: number | null;
+}
+
+export interface RangeReport {
+  startDate: string;
+  endDate: string;
+  records: Array<{
+    date: string;
+    caddieName: string;
+    listNumber: number;
+    status: AttendanceStatus;
+    turnsCount: number;
+  }>;
+  summary: {
+    totalCaddies: number;
+    present: number;
+    late: number;
+    absent: number;
+    permission: number;
+    totalTurns: number;
+  };
+}
+
+// Auth Response Types
+export interface LoginResponse {
+  token: string;
+  admin: boolean;
+}
+
+export interface VerifyResponse {
+  valid: boolean;
+  user: {
+    adminId: string;
+  };
+}
+
+export interface LogoutResponse {
+  message: string;
+}
+
+export interface WhatsAppUrlResponse {
+  whatsappUrl: string;
+}
+

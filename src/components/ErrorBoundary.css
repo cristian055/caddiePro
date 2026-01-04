@@ -1,0 +1,89 @@
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.error-boundary__content {
+  max-width: 600px;
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--color-card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-boundary__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-danger);
+  margin: 0 0 1rem;
+}
+
+.error-boundary__message {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.error-boundary__details {
+  margin: 1rem 0 1.5rem;
+  text-align: left;
+}
+
+.error-boundary__summary {
+  cursor: pointer;
+  color: var(--color-primary);
+  font-weight: 500;
+  padding: 0.5rem;
+  background-color: var(--color-bg-light);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.error-boundary__summary:hover {
+  background-color: var(--color-bg-lighter);
+}
+
+.error-boundary__error,
+.error-boundary__stack {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-code);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+
+.error-boundary__button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.error-boundary__button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+@media (max-width: 640px) {
+  .error-boundary__content {
+    padding: 1.5rem;
+  }
+
+  .error-boundary__title {
+    font-size: 1.25rem;
+  }
+}

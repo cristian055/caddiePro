@@ -1,5 +1,41 @@
+import type {
+  Caddie,
+  Turn,
+  AttendanceRecord,
+  ListSettings,
+  QueueItem,
+  DailyReport,
+  RangeReport,
+  Message,
+  CreateCaddieDto,
+  UpdateCaddieDto,
+  CreateTurnDto,
+  UpdateTurnDto,
+  CreateAttendanceDto,
+  UpdateAttendanceDto,
+  UpdateListSettingsDto,
+  CreateMessageDto,
+  LoginResponse,
+  VerifyResponse,
+  LogoutResponse,
+  WhatsAppUrlResponse,
+} from '../types';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 const TOKEN_KEY = 'caddiePro_token';
+
+// API Error class for better error handling
+export class ApiError extends Error {
+  status?: number;
+  data?: unknown;
+
+  constructor(message: string, status?: number, data?: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.data = data;
+  }
+}
 
 class ApiClient {
   private token: string | null = null;
@@ -20,7 +56,7 @@ class ApiClient {
     return headers;
   }
 
-  setToken(token: string | null) {
+  setToken(token: string | null): void {
     this.token = token;
     if (token) {
       localStorage.setItem(TOKEN_KEY, token);
@@ -50,9 +86,11 @@ class ApiClient {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = typeof errorData === 'object' && 'error' in errorData
+        ? String(errorData.error)
+        : `HTTP error! status: ${response.status}`;
       console.error(`[API] Error ${response.status}:`, errorMessage);
-      throw new Error(errorMessage);
+      throw new ApiError(errorMessage, response.status, errorData);
     }
 
     if (response.status === 204) {
@@ -68,14 +106,14 @@ class ApiClient {
     return this.request<T>(endpoint, { method: 'GET' }, requireAuth);
   }
 
-  async post<T>(endpoint: string, data: any, requireAuth = false): Promise<T> {
+  async post<T>(endpoint: string, data: unknown, requireAuth = false): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
     }, requireAuth);
   }
 
-  async put<T>(endpoint: string, data: any, requireAuth = false): Promise<T> {
+  async put<T>(endpoint: string, data: unknown, requireAuth = false): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -85,168 +123,37 @@ class ApiClient {
   async delete<T>(endpoint: string, requireAuth = false): Promise<T> {
     return this.request<T>(endpoint, { method: 'DELETE' }, requireAuth);
   }
+
+  // Special method for file downloads (CSV, etc.)
+  async downloadFile(endpoint: string, filename: string): Promise<void> {
+    const url = `${API_BASE_URL}${endpoint}`;
+    const headers = this.getHeaders(true); // Always require auth for downloads
+
+    const response = await fetch(url, { headers });
+
+    if (!response.ok) {
+      throw new ApiError(`Failed to download ${filename}`, response.status);
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(downloadUrl);
+    document.body.removeChild(a);
+  }
 }
 
-const apiClient = new ApiClient();
-
-interface LoginResponse {
-  token: string;
-  admin: boolean;
-}
-
-interface VerifyResponse {
-  valid: boolean;
-  user: {
-    adminId: string;
-  };
-}
-
-interface LogoutResponse {
-  message: string;
-}
-
-interface Caddie {
-  id: string;
-  name: string;
-  listNumber: number;
-  status: 'Disponible' | 'En campo' | 'Ausente';
-  phoneNumber?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface CreateCaddieDto {
-  name: string;
-  listNumber: number;
-  phoneNumber?: string;
-  status?: 'Disponible' | 'En campo' | 'Ausente';
-}
-
-interface UpdateCaddieDto {
-  name?: string;
-  listNumber?: number;
-  status?: 'Disponible' | 'En campo' | 'Ausente';
-}
-
-interface Turn {
-  id: string;
-  caddieId: string;
-  caddieName: string;
-  listNumber: number;
-  startTime: string;
-  endTime: string | null;
-  completed: boolean;
-}
-
-interface CreateTurnDto {
-  caddieId: string;
-  caddieName: string;
-  listNumber: number;
-}
-
-interface UpdateTurnDto {
-  endTime?: string;
-  completed?: boolean;
-}
-
-interface AttendanceRecord {
-  id: string;
-  caddieId: string;
-  caddieName: string;
-  listNumber: number;
-  date: string;
-  status: 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso';
-  callTime: string;
-  arrivalTime: string | null;
-  turnsCount: number;
-  endTime: string | null;
-  createdAt: string;
-}
-
-interface CreateAttendanceDto {
-  caddieId: string;
-  caddieName: string;
-  listNumber: number;
-  date: string;
-  status: 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso';
-}
-
-interface UpdateAttendanceDto {
-  status?: 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso';
-  arrivalTime?: string;
-  turnsCount?: number;
-  endTime?: string;
-}
-
-interface ListSettings {
-  listNumber: number;
-  callTime: string;
-  order: 'ascendente' | 'descendente';
-  rangeStart?: number;
-  rangeEnd?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface UpdateListSettingsDto {
-  callTime?: string;
-  order?: 'ascendente' | 'descendente';
-  rangeStart?: number;
-  rangeEnd?: number;
-}
-
-interface QueueItem {
-  id: string;
-  position: number;
-  listNumber: number;
-  available: boolean;
-  caddie: {
-    id: string;
-    name: string;
-    status: 'Disponible' | 'En campo' | 'Ausente';
-  };
-}
-
-interface DailyReport {
-  date: string;
-  records: Array<{
-    id: string;
-    caddieName: string;
-    listNumber: number;
-    date: string;
-    status: 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso';
-    turnsCount: number;
-  }>;
-  summary: {
-    totalCaddies: number;
-    present: number;
-    late: number;
-    absent: number;
-    permission: number;
-    totalTurns: number;
-  };
-}
-
-interface Message {
-  id: string;
-  content: string;
-  targetList: number | null;
-  createdAt: string;
-  read: boolean;
-}
-
-interface CreateMessageDto {
-  content: string;
-  targetList?: number | null;
-}
-
-interface WhatsAppUrlResponse {
-  whatsappUrl: string;
-}
+export const apiClient = new ApiClient();
 
 export const authApi = {
   login: async (password: string): Promise<LoginResponse> => {
-    return apiClient.post<LoginResponse>('/auth/login', { password });
+    const response = await apiClient.post<LoginResponse>('/auth/login', { password });
+    apiClient.setToken(response.token);
+    return response;
   },
 
   verify: async (): Promise<VerifyResponse> => {
@@ -262,15 +169,15 @@ export const authApi = {
 
 export const caddiesApi = {
   getAll: async (): Promise<Caddie[]> => {
-    return apiClient.get<Caddie[]>('/caddies');
+    return apiClient.get<Caddie[]>('/caddies', true);
   },
 
   getById: async (id: string): Promise<Caddie> => {
-    return apiClient.get<Caddie>(`/caddies/${id}`);
+    return apiClient.get<Caddie>(`/caddies/${id}`, true);
   },
 
   getByList: async (listNumber: number): Promise<Caddie[]> => {
-    return apiClient.get<Caddie[]>(`/caddies/list/${listNumber}`);
+    return apiClient.get<Caddie[]>(`/caddies/list/${listNumber}`, true);
   },
 
   create: async (data: CreateCaddieDto): Promise<Caddie> => {
@@ -288,23 +195,23 @@ export const caddiesApi = {
 
 export const turnsApi = {
   getAll: async (): Promise<Turn[]> => {
-    return apiClient.get<Turn[]>('/turns');
+    return apiClient.get<Turn[]>('/turns', true);
   },
 
   getById: async (id: string): Promise<Turn> => {
-    return apiClient.get<Turn>(`/turns/${id}`);
+    return apiClient.get<Turn>(`/turns/${id}`, true);
   },
 
   getByCaddie: async (caddieId: string): Promise<Turn[]> => {
-    return apiClient.get<Turn[]>(`/turns/caddie/${caddieId}`);
+    return apiClient.get<Turn[]>(`/turns/caddie/${caddieId}`, true);
   },
 
   getByList: async (listNumber: number): Promise<Turn[]> => {
-    return apiClient.get<Turn[]>(`/turns/list/${listNumber}`);
+    return apiClient.get<Turn[]>(`/turns/list/${listNumber}`, true);
   },
 
   getByDate: async (date: string): Promise<Turn[]> => {
-    return apiClient.get<Turn[]>(`/turns/date/${date}`);
+    return apiClient.get<Turn[]>(`/turns/date/${date}`, true);
   },
 
   create: async (data: CreateTurnDto): Promise<Turn> => {
@@ -318,19 +225,19 @@ export const turnsApi = {
 
 export const attendanceApi = {
   getAll: async (): Promise<AttendanceRecord[]> => {
-    return apiClient.get<AttendanceRecord[]>('/attendance');
+    return apiClient.get<AttendanceRecord[]>('/attendance', true);
   },
 
   getByCaddie: async (caddieId: string): Promise<AttendanceRecord[]> => {
-    return apiClient.get<AttendanceRecord[]>(`/attendance/caddie/${caddieId}`);
+    return apiClient.get<AttendanceRecord[]>(`/attendance/caddie/${caddieId}`, true);
   },
 
   getByList: async (listNumber: number): Promise<AttendanceRecord[]> => {
-    return apiClient.get<AttendanceRecord[]>(`/attendance/list/${listNumber}`);
+    return apiClient.get<AttendanceRecord[]>(`/attendance/list/${listNumber}`, true);
   },
 
   getByDate: async (date: string): Promise<AttendanceRecord[]> => {
-    return apiClient.get<AttendanceRecord[]>(`/attendance/date/${date}`);
+    return apiClient.get<AttendanceRecord[]>(`/attendance/date/${date}`, true);
   },
 
   create: async (data: CreateAttendanceDto): Promise<AttendanceRecord> => {
@@ -344,15 +251,15 @@ export const attendanceApi = {
 
 export const listSettingsApi = {
   getAll: async (): Promise<ListSettings[]> => {
-    return apiClient.get<ListSettings[]>('/list-settings');
+    return apiClient.get<ListSettings[]>('/list-settings', true);
   },
 
   getByList: async (listNumber: number): Promise<ListSettings> => {
-    return apiClient.get<ListSettings>(`/list-settings/${listNumber}`);
+    return apiClient.get<ListSettings>(`/list-settings/${listNumber}`, true);
   },
 
   getQueue: async (listNumber: number): Promise<QueueItem[]> => {
-    return apiClient.get<QueueItem[]>(`/list-settings/${listNumber}/queue`);
+    return apiClient.get<QueueItem[]>(`/list-settings/${listNumber}/queue`, true);
   },
 
   update: async (listNumber: number, data: UpdateListSettingsDto): Promise<ListSettings> => {
@@ -370,39 +277,21 @@ export const listSettingsApi = {
 
 export const reportsApi = {
   getDaily: async (date: string): Promise<DailyReport> => {
-    return apiClient.get<DailyReport>(`/reports/daily/${date}`);
+    return apiClient.get<DailyReport>(`/reports/daily/${date}`, true);
   },
 
-  getRange: async (startDate: string, endDate: string): Promise<any> => {
-    return apiClient.get<any>(`/reports/range/${startDate}/${endDate}`);
+  getRange: async (startDate: string, endDate: string): Promise<RangeReport> => {
+    return apiClient.get<RangeReport>(`/reports/range/${startDate}/${endDate}`, true);
   },
 
   downloadCsv: async (date: string): Promise<void> => {
-    const url = `${API_BASE_URL}/reports/csv/${date}`;
-    const token = apiClient.getToken();
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to download CSV');
-    }
-
-    const blob = await response.blob();
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = `reporte_${date}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(downloadUrl);
+    await apiClient.downloadFile(`/reports/csv/${date}`, `reporte_${date}.csv`);
   },
 };
 
 export const messagesApi = {
   getAll: async (): Promise<Message[]> => {
-    return apiClient.get<Message[]>('/messages');
+    return apiClient.get<Message[]>('/messages', true);
   },
 
   create: async (data: CreateMessageDto): Promise<Message> => {
@@ -418,6 +307,6 @@ export const messagesApi = {
   },
 
   getWhatsAppUrl: async (id: string): Promise<WhatsAppUrlResponse> => {
-    return apiClient.get<WhatsAppUrlResponse>(`/messages/${id}/whatsapp`);
+    return apiClient.get<WhatsAppUrlResponse>(`/messages/${id}/whatsapp`, true);
   },
 };
