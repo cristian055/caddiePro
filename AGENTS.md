@@ -41,7 +41,7 @@ export const ComponentName: React.FC<PropsType> = ({ prop1, prop2 }) => {
 ### Naming Conventions
 - **Components**: PascalCase (e.g., `AttendanceCall`, `CaddieManagement`)
 - **Functions/variables**: camelCase (e.g., `handleSave`, `isLoading`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `STORAGE_KEY`, `ADMIN_PASSWORD`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `API_BASE_URL`, `TOKEN_KEY`)
 - **Types**: PascalCase (e.g., `AppContextType`, `ButtonProps`)
 - **Interfaces**: PascalCase (e.g., `Caddie`, `Turn`, `AttendanceRecord`)
 
@@ -50,18 +50,39 @@ export const ComponentName: React.FC<PropsType> = ({ prop1, prop2 }) => {
 - Use `type` for unions, literals, and primitive types
 - Define types in `src/types/index.ts` for shared types
 - Use union types for string literals (e.g., `'Disponible' | 'En campo' | 'Ausente'`)
+- Use `string | null` for optional fields that can be null from backend
 
 ### State Management
 - Primary state via React Context (`src/context/AppContext.tsx`)
 - Use `useApp()` custom hook to access context
 - Always call `useApp()` within `AppProvider` wrapper (throws error otherwise)
 - Local state with `useState` for component-specific UI state
-- Persist critical state to localStorage
+- Context functions are async (return `Promise<void>`)
+- Use `refreshData()` to fetch latest data from backend
+- State includes `isLoading` and `error` for async operations
 
 ### Error Handling
 - Use early returns for validation: `if (!caddie) return;`
-- Handle localStorage operations in try/catch blocks
-- Check context availability: `if (!context) throw new Error(...)`
+- Wrap API calls in try/catch blocks
+- Set error state via `setError(message)` on failures
+- Display error messages to users from context `error` prop
+- Backend errors logged to console via ApiClient
+
+### API Client
+- Backend service in `src/services/api.ts` with ApiClient class
+- Base URL: `http://localhost:3000/api`
+- JWT token stored in `caddiePro_token` localStorage key
+- All API requests logged to browser console for debugging
+- Protected endpoints require `Authorization: Bearer <token>` header
+- Token management: `setToken(token)`, `getToken()`, cleared on logout
+
+### Backend Integration
+- Backend API specification in `BACKEND_API.md`
+- All CRUD operations go through backend (no direct localStorage)
+- JWT-based authentication for admin access
+- Entities: Caddies, Turns, Attendance, ListSettings, Messages, Reports
+- Health check: `GET /health` to verify backend connectivity
+- Login endpoint: `POST /api/auth/login` with password field
 
 ### Styling
 - Plain CSS with separate `.css` files per component
@@ -92,51 +113,33 @@ export const ComponentName: React.FC<PropsType> = ({ prop1, prop2 }) => {
 ### Localization
 - UI text and comments in Spanish (app is for Spanish-speaking users)
 - Labels and messages in Spanish
-- Admin password: `admin123` (documented in AppContext.tsx:69)
+- Admin password for backend: `admin123`
+
+### Component Patterns
+- Event handlers calling context functions must be async: `onClick={async () => await deleteCaddie(id)}`
+- Show loading state during async operations when needed
+- Display error messages from context when available
+- Use `await` for all API calls in event handlers
 
 ### Idioms
 - Use `...prev` spread for immutable state updates
 - Filter and map with immutable patterns
 - Date handling: `new Date().toISOString()` for storage, split for display
-- IDs: Use timestamp-based unique IDs (e.g., `caddie_${Date.now()}`)
+- IDs: Backend returns UUIDs (no longer timestamp-based)
 - Auto-refresh intervals: use `useEffect` with `setInterval` and cleanup
 - Class name manipulation for status: `status-${status.replace(/\s+/g, '-').toLowerCase()}`
-
-### Backend API Context
-- Backend API specification in `BACKEND_API.md`
-- App currently uses localStorage (client-side only)
-- Backend will provide RESTful endpoints for persistence
-- JWT-based authentication for admin access
-- Entities: Caddies, Turns, Attendance, ListSettings, Messages, Reports
 
 ### File Organization
 - Components: `src/components/` - Feature components (AttendanceCall, CaddieManagement, etc.)
 - Pages: `src/pages/` - Route-level components (Dashboard, Login, TurnsPage, RootLayout)
 - UI: `src/components/ui/` - Reusable UI components (Button, Icon)
+- Services: `src/services/` - API client and backend integration (api.ts)
 - Context: `src/context/` - React Context providers (AppContext.tsx)
 - Types: `src/types/index.ts` - Shared TypeScript types/interfaces
 - Styles: `src/styles/` - Global styles and design tokens (tokens.css)
 
-### localStorage Patterns
-- Use try/catch when accessing localStorage (can throw in restricted contexts)
-- Storage keys follow pattern: `caddiePro_keyname`
-- Parse JSON with fallback to default state
-- Serialize state before saving: `JSON.stringify(state)`
-- Clear specific keys, never use `localStorage.clear()`
-
-### Form Handling
-- Use controlled components with `useState` for form state
-- Handle Enter key with onKeyPress: `e.key === 'Enter' && handleSubmit()`
-- Trim whitespace from text inputs: `name.trim()`
-- Reset form after successful submission: `setName('')`
-
-### List Management Patterns
-- Filter lists with: `state.items.filter(item => condition)`
-- Update single item in array: `prev.items.map(item => item.id === id ? {...item, ...changes} : item)`
-- Add new item: `...prev, items: [...prev.items, newItem]`
-- Remove item: `...prev, items: prev.items.filter(item => item.id !== id)`
-
-### Conditional Rendering
-- Use ternary operators for simple conditions: `condition ? <A /> : <B />`
-- Use short-circuit for optional rendering: `condition && <Component />`
-- Early returns reduce nesting: `if (!data) return <EmptyState />;`
+### Key Type Notes
+- `Caddie.listNumber` (not `list`) - matches backend field names
+- `Turn.endTime: string | null` - nullable for active turns
+- `AttendanceRecord.arrivalTime: string | null` - nullable for some statuses
+- `ListSettings.createdAt`, `ListSettings.updatedAt` - backend timestamps
