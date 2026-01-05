@@ -21,6 +21,9 @@ interface AppContextType {
   resetDaily: () => Promise<void>;
   loginAdmin: (password: string) => Promise<boolean>;
   logoutAdmin: () => Promise<void>;
+  updateCaddieLocal: (id: string, updates: Partial<Caddie>) => void;
+  addCaddieLocal: (caddie: Caddie) => void;
+  deleteCaddieLocal: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -248,26 +251,46 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const getListCaddies = (list: ListNumber): Caddie[] => {
+  const getListCaddies = useCallback((list: ListNumber): Caddie[] => {
     const listSettings = state.listSettings.find(s => s.listNumber === list);
     let caddies = state.caddies.filter(c => c.listNumber === list && c.status !== 'Ausente');
 
+    // Aplicar filtro de rango si existe
     if (listSettings && listSettings.rangeStart !== undefined && listSettings.rangeEnd !== undefined) {
       const rangeStartIndex = listSettings.rangeStart - 1;
       const rangeEndIndex = listSettings.rangeEnd - 1;
       caddies = caddies.filter((_, index) => index >= rangeStartIndex && index <= rangeEndIndex);
     }
 
+    // Aplicar orden (ascendente o descendente) primero
+    // Usamos una comparación estable con índices para mantener orden consistente
+    const caddiesWithIndices = caddies.map((caddie, index) => ({ caddie, originalIndex: index }));
+
     if (listSettings?.order === 'descendente') {
-      caddies = [...caddies].reverse();
+      // Orden descendente: reversa el array completo
+      caddiesWithIndices.reverse();
     }
 
-    return caddies.sort((a, b) => {
-      if (a.status === 'Disponible' && b.status !== 'Disponible') return -1;
-      if (a.status !== 'Disponible' && b.status === 'Disponible') return 1;
-      return 0;
+    // Luego ordenamos por estado: 'Disponible' primero, luego 'En campo'
+    const sortedWithIndices = caddiesWithIndices.sort((a, b) => {
+      // Prioridad 1: 'Disponible' va antes de 'En campo'
+      const statusPriority: Record<string, number> = {
+        'Disponible': 1,
+        'En campo': 2,
+      };
+      const priorityA = statusPriority[a.caddie.status] || 99;
+      const priorityB = statusPriority[b.caddie.status] || 99;
+
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+
+      // Si tienen el mismo estado, mantener el orden original (índice)
+      return a.originalIndex - b.originalIndex;
     });
-  };
+
+    return sortedWithIndices.map(item => item.caddie);
+  }, [state.caddies, state.listSettings]);
 
   const exportToCSV = async () => {
     try {
@@ -294,6 +317,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const updateCaddieLocal = useCallback((id: string, updates: Partial<Caddie>) => {
+    setState(prev => ({
+      ...prev,
+      caddies: prev.caddies.map(c =>
+        c.id === id ? { ...c, ...updates } : c
+      ),
+    }));
+  }, []);
+
+  const addCaddieLocal = useCallback((caddie: Caddie) => {
+    setState(prev => {
+      // Evitar duplicados
+      if (prev.caddies.some(c => c.id === caddie.id)) return prev;
+      return {
+        ...prev,
+        caddies: [...prev.caddies, caddie],
+      };
+    });
+  }, []);
+
+  const deleteCaddieLocal = useCallback((id: string) => {
+    setState(prev => ({
+      ...prev,
+      caddies: prev.caddies.filter(c => c.id !== id),
+    }));
+  }, []);
+
   const value: AppContextType = {
     state,
     isAdmin,
@@ -313,6 +363,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     resetDaily,
     loginAdmin,
     logoutAdmin,
+    updateCaddieLocal,
+    addCaddieLocal,
+    deleteCaddieLocal,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -2,9 +2,6 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { turnsApi } from '../services/api';
 import type { Turn, CreateTurnDto, UpdateTurnDto } from '../types';
 
-// Polling interval for real-time updates (2 seconds for fast updates across devices)
-export const POLLING_INTERVAL = 2000;
-
 // Query keys for React Query cache management
 export const turnsQueryKeys = {
   all: ['turns'] as const,
@@ -18,12 +15,11 @@ export const turnsQueryKeys = {
   date: (date: string) => [...turnsQueryKeys.dates(), date] as const,
 } as const;
 
-// Get all turns with real-time polling
+// Get all turns
 export function useTurns(options?: Omit<UseQueryOptions<Turn[]>, 'queryKey' | 'queryFn'>) {
   return useQuery({
     queryKey: turnsQueryKeys.all,
     queryFn: turnsApi.getAll,
-    refetchInterval: POLLING_INTERVAL, // Auto-refresh every 5 seconds
     ...options,
   });
 }

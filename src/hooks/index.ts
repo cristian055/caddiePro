@@ -1,5 +1,7 @@
 export { useCaddies, useCaddie, useCaddiesByList, useCreateCaddie, useUpdateCaddie, useDeleteCaddie } from './useCaddies';
 export type { caddiesQueryKeys } from './useCaddies';
+export { useCaddieUpdates } from './useCaddieUpdates';
+export type { UseCaddieUpdatesOptions } from './useCaddieUpdates';
 
 export {
   useTurns,
@@ -40,5 +42,3 @@ export type { messagesQueryKeys } from './useMessages';
 
 export { useDailyReport, useRangeReport, useDownloadCSV } from './useReports';
 export type { reportsQueryKeys } from './useReports';
-
-export { useRealtimeData, useRefreshRealtimeData, usePrefetchRealtimeData, POLLING_INTERVAL } from './useRealtimeData';

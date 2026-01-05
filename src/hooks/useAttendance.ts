@@ -2,9 +2,6 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { attendanceApi } from '../services/api';
 import type { AttendanceRecord, CreateAttendanceDto, UpdateAttendanceDto } from '../types';
 
-// Polling interval for real-time updates (2 seconds for fast updates across devices)
-export const POLLING_INTERVAL = 2000;
-
 // Query keys for React Query cache management
 export const attendanceQueryKeys = {
   all: ['attendance'] as const,
@@ -18,12 +15,11 @@ export const attendanceQueryKeys = {
   date: (date: string) => [...attendanceQueryKeys.dates(), date] as const,
 } as const;
 
-// Get all attendance records with real-time polling
+// Get all attendance records
 export function useAttendance(options?: Omit<UseQueryOptions<AttendanceRecord[]>, 'queryKey' | 'queryFn'>) {
   return useQuery({
     queryKey: attendanceQueryKeys.all,
     queryFn: attendanceApi.getAll,
-    refetchInterval: POLLING_INTERVAL, // Auto-refresh every 5 seconds
     ...options,
   });
 }

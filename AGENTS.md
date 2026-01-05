@@ -5,11 +5,7 @@
 - `npm run dev` - Start Vite development server at http://localhost:5173
 - `npm run build` - TypeScript type check and Vite production build
 - `npm run lint` - Run ESLint with auto-fix
-- `npm run test` - Run all tests (Vitest)
-- `npm run test:ui` - Run Vitest with browser UI
-- `npm run test -- src/components/ui/Button.test.tsx` - Run single test file
-- `npm run test -- -t "should render"` - Run tests matching pattern
-- `npm run test:coverage` - Run tests with coverage report
+- `npm run preview` - Preview production build locally
 
 ## TypeScript Configuration
 
@@ -18,6 +14,21 @@
 - **Module**: ESNext with bundler resolution
 - **Unused locals/parameters**: Not allowed
 - **verbatimModuleSyntax**: Enabled (use `import type` for types)
+- **JSX**: React JSX transform
+- **Project references**: Separate configs for app and node environments
+
+## ESLint Configuration
+
+- **Config**: Flat config format (`eslint.config.js`)
+- **Rules**: TypeScript recommended + React hooks + React refresh
+- **Ignores**: `dist/` directory
+- **Plugins**: `typescript-eslint`, `react-hooks`, `react-refresh`
+
+## Vite Configuration
+
+- **Plugin**: React plugin for JSX transformation
+- **Build output**: `dist/` directory
+- **Development server**: Hot module replacement enabled
 
 ## Code Style Guidelines
 
@@ -44,16 +55,18 @@
 - CSS classes: BEM-like (e.g., `attendance-call`, `btn--primary`, `card--elevated`)
 
 ### Type Definitions
-- Use `interface` for object shapes that can be extended
-- Use `type` for unions, literals, primitives
+- Use `interface` for object shapes that can be extended (e.g., API responses, component props)
+- Use `type` for unions, literals, primitives, and component prop types
 - Define shared types in `src/types/index.ts`
 - DTOs in `src/utils/validation.ts` (Zod schemas)
 - Union types for string literals: `'Disponible' | 'En campo' | 'Ausente'`
+- WebSocket event types defined in `src/services/websocket.ts`
 
 ## State Management
 
 - **Primary**: React Query (TanStack Query) for server state
 - **Secondary**: React Context for app-wide state (`AppContext`, `ToastProvider`)
+- **WebSocket**: Real-time updates via `wsService` singleton
 - Use React Query hooks: `useCaddies()`, `useTurns()`, `useAttendance()`, `useAuth()`
 - Query keys: Hierarchical with factory functions:
   ```typescript
@@ -65,38 +78,7 @@
   ```
 - Local state with `useState` for component-specific UI state
 - Toast notifications via `useToast()` hook
-
-## Real-Time Updates
-
-For real-time data on the main page, use polling with React Query:
-
-```typescript
-// Enable polling in useQuery hooks
-export function useCaddies(options?: Omit<UseQueryOptions<Caddie[]>, 'queryKey' | 'queryFn'>) {
-  return useQuery({
-    queryKey: caddiesQueryKeys.all,
-    queryFn: caddiesApi.getAll,
-    refetchInterval: 2000, // Poll every 2 seconds for fast updates across devices
-    ...options,
-  });
-}
-```
-
-Or use the `useRealtimeData` hook that combines all polling-enabled data:
-
-```typescript
-import { useRealtimeData } from '../hooks/useRealtimeData';
-
-function MyComponent() {
-  const { caddies, turns, getListCaddies, isLoading } = useRealtimeData();
-  // Data automatically updates every 2 seconds
-}
-```
-
-The main page (`CaddieTurns`) uses AppContext with `setInterval` polling:
-- Interval: 2 seconds (fast updates for multiple devices)
-- Calls `refreshData()` to fetch fresh data
-- Updates via `refreshKey` state to trigger re-render
+- WebSocket updates trigger local state changes via `useCaddieUpdates` hook
 
 ## Error Handling
 
@@ -117,6 +99,15 @@ The main page (`CaddieTurns`) uses AppContext with `setInterval` polling:
 - All requests logged to console (prefixed with `[API]`)
 - Protected endpoints: `Authorization: Bearer <token>` header
 - Custom `ApiError` class with `status` and `data` properties
+
+## WebSocket Integration
+
+- WebSocket service in `src/services/websocket.ts` with `wsService` singleton class
+- Base URL: `import.meta.env.VITE_WS_URL` (defaults to localhost:3000)
+- Events: `caddie:status_changed`, `caddie:added`, `caddie:updated`, `caddie:deleted`
+- Hook `useCaddieUpdates` for real-time updates with automatic cleanup
+- Connection status monitoring via `onConnectionChange` callback
+- Auto-reconnection with configurable attempts and delay
 
 ## Styling
 
@@ -145,36 +136,35 @@ Reusable components in `src/components/ui/`:
 - `Fallbacks` - `FallbackError`, `FallbackLoading`, `EmptyState`
 - `ToastProvider` - wraps app for toast notifications
 
-## Localization & Text
+## Localization & Validation
 
 - UI text and comments in Spanish
 - Admin password: `admin123`
-- User-facing messages in Spanish
 - Date/time in ISO format for storage, localized for display
-
-## Form Validation
-
-- Use Zod schemas from `src/utils/validation.ts`
+- Form validation with Zod schemas from `src/utils/validation.ts`
 - Helper: `validateForm(schema, data)` returns `{ valid: boolean; errors: Record<string, string> }`
-- Type-safe form data types inferred from schemas
 - Display errors with `form-error` CSS class
 
 ## File Organization
 
 ```
 src/
+├── assets/        # Static assets (images, icons)
 ├── components/    # React components (features and ui)
 │   └── ui/        # Reusable UI components
 ├── pages/         # Route components (Dashboard, Login, TurnsPage, RootLayout)
 ├── hooks/         # Custom React hooks (useAuth, useCaddies, useTurns, etc.)
-├── services/      # API client and API modules (api.ts)
+├── services/      # API client and API modules (api.ts, websocket.ts)
 ├── context/       # React Context (AppContext)
-├── config/        # Config & constants
+├── config/        # Configuration & constants
 ├── types/         # TypeScript types (index.ts exports all)
-├── utils/         # Utilities (validation.ts, logger.ts)
-├── styles/        # Global styles, tokens.css
-└── providers/     # React providers (QueryProvider, ToastProvider)
+├── utils/         # Utilities (validation.ts with Zod schemas)
+├── styles/        # Global styles, CSS variables (tokens.css)
+├── providers/     # React providers (QueryProvider, ToastProvider)
+└── main.tsx       # App entry point
 ```
+
+
 
 ## Key Type Notes
 
@@ -186,6 +176,9 @@ src/
 - `ToastType` - 'success' | 'error' | 'warning' | 'info'
 - `CaddieStatus` - 'Disponible' | 'En campo' | 'Ausente'
 - `AttendanceStatus` - 'Presente' | 'Llegó tarde' | 'No vino' | 'Permiso'
+- `ListOrder` - 'ascendente' | 'descendente'
+- `ListNumber` - 1 | 2 | 3
+- `WebSocketEvent` - Union type for WebSocket event names
 
 ## Idioms & Patterns
 
@@ -193,6 +186,7 @@ src/
 - Async handlers: `onClick={async () => await mutate.mutate(data)}`
 - Loading states: `query.isLoading` or `mutation.isLoading`
 - Status classes: `status-${status.replace(/\s+/g, '-').toLowerCase()}`
-- Auto-refresh: `useEffect` with `setInterval` and cleanup function
 - UUID IDs from backend (no timestamp-based generation)
 - Date handling: `new Date().toISOString()` for storage
+- WebSocket event handling: Use `useCaddieUpdates` hook with object options
+- WebSocket cleanup: Automatic cleanup via returned functions from `on*` methods

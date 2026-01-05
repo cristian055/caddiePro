@@ -2,9 +2,6 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { caddiesApi } from '../services/api';
 import type { Caddie, CreateCaddieDto, UpdateCaddieDto } from '../types';
 
-// Polling interval for real-time updates (2 seconds for fast updates across devices)
-export const POLLING_INTERVAL = 2000;
-
 // Query keys for React Query cache management
 export const caddiesQueryKeys = {
   all: ['caddies'] as const,
@@ -14,12 +11,11 @@ export const caddiesQueryKeys = {
   detail: (id: string) => [...caddiesQueryKeys.details(), id] as const,
 } as const;
 
-// Get all caddies with real-time polling
+// Get all caddies
 export function useCaddies(options?: Omit<UseQueryOptions<Caddie[]>, 'queryKey' | 'queryFn'>) {
   return useQuery({
     queryKey: caddiesQueryKeys.all,
     queryFn: caddiesApi.getAll,
-    refetchInterval: POLLING_INTERVAL, // Auto-refresh every 5 seconds
     ...options,
   });
 }

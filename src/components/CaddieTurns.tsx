@@ -1,35 +1,126 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
+import { wsService } from '../services/websocket';
+import { useCaddieUpdates } from '../hooks/useCaddieUpdates';
+import type { CaddieUpdate, CaddieAddedData, CaddieDeletedData } from '../services/websocket';
 import { Icon } from './ui/Icon';
 import { SkeletonBlock } from './ui/Skeleton';
-import type { ListNumber } from '../types';
+import type { ListNumber, Caddie, CaddieStatus } from '../types';
 import './CaddieTurns.css';
 
-// Polling interval for real-time updates (2 seconds for fast updates across devices)
-const POLLING_INTERVAL = 2000;
-
 export const CaddieTurns: React.FC = () => {
-  const { getListCaddies, isLoading, refreshData, state } = useApp();
-  const isInitialMount = useRef(true);
+  const { getListCaddies, isLoading, updateCaddieLocal, addCaddieLocal, deleteCaddieLocal } = useApp();
+  const [isConnected, setIsConnected] = useState(false);
 
-  // Polling with actual data fetch
+  // Conectar WebSocket al montar el componente
   useEffect(() => {
-    // Initial data fetch on mount
-    if (isInitialMount.current) {
-      refreshData();
-      isInitialMount.current = false;
+    const token = localStorage.getItem('caddiePro_token');
+    if (token) {
+      console.log('[CaddieTurns] Conectando WebSocket...');
+      wsService.connect(token);
     }
 
-    // Set up polling interval to fetch fresh data
-    const interval = setInterval(() => {
-      refreshData();
-    }, POLLING_INTERVAL);
+    // Cleanup al desmontar
+    return () => {
+      console.log('[CaddieTurns] Desconectando WebSocket...');
+      wsService.disconnect();
+    };
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [refreshData]);
+  // Escuchar cambios de estado de conexión
+  useEffect(() => {
+    const cleanup = wsService.onConnectionChange((connected) => {
+      console.log('[CaddieTurns] Estado de conexión:', connected);
+      setIsConnected(connected);
+    });
 
-  // Show loading skeleton while data is loading
-  if (isLoading && state.caddies.length === 0) {
+    return cleanup;
+  }, []);
+
+  // Handler para cambios de estado de caddie
+  const handleStatusChanged = useCallback((update: CaddieUpdate) => {
+    console.log('[WS] Status changed recibido:', update);
+    
+    if (!update.caddieId) {
+      console.warn('[WS] Update sin caddieId:', update);
+      return;
+    }
+
+    updateCaddieLocal(update.caddieId, {
+      status: update.status as CaddieStatus,
+      name: update.name,
+      listNumber: update.listNumber,
+    });
+  }, [updateCaddieLocal]);
+
+  // Handler para caddie agregado
+  const handleCaddieAdded = useCallback((data: CaddieAddedData) => {
+    console.log('[WS] Caddie agregado:', data);
+    
+    if (!data.caddieId) {
+      console.warn('[WS] Added sin caddieId:', data);
+      return;
+    }
+
+    const newCaddie: Caddie = {
+      id: data.caddieId,
+      name: data.name,
+      listNumber: data.listNumber,
+      status: data.status as CaddieStatus,
+      phoneNumber: data.phoneNumber,
+      createdAt: data.createdAt || new Date().toISOString(),
+      updatedAt: data.updatedAt || new Date().toISOString(),
+    };
+    
+    addCaddieLocal(newCaddie);
+  }, [addCaddieLocal]);
+
+  // Handler para caddie actualizado (nombre, lista, etc.)
+  const handleCaddieUpdated = useCallback((update: CaddieUpdate) => {
+    console.log('[WS] Caddie actualizado:', update);
+    
+    if (!update.caddieId) {
+      console.warn('[WS] Updated sin caddieId:', update);
+      return;
+    }
+
+    updateCaddieLocal(update.caddieId, {
+      status: update.status as CaddieStatus,
+      name: update.name,
+      listNumber: update.listNumber,
+    });
+  }, [updateCaddieLocal]);
+
+  // Handler para caddie eliminado
+  const handleCaddieDeleted = useCallback((data: CaddieDeletedData) => {
+    console.log('[WS] Caddie eliminado:', data);
+    
+    if (!data.caddieId) {
+      console.warn('[WS] Deleted sin caddieId:', data);
+      return;
+    }
+
+    deleteCaddieLocal(data.caddieId);
+  }, [deleteCaddieLocal]);
+
+  // Suscribirse a actualizaciones de WebSocket
+  useCaddieUpdates({
+    onStatusChanged: handleStatusChanged,
+    onCaddieAdded: handleCaddieAdded,
+    onCaddieUpdated: handleCaddieUpdated,
+    onCaddieDeleted: handleCaddieDeleted,
+  });
+
+  // Renderizar indicador de estado de conexión
+  const renderConnectionStatus = () => (
+    <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}>
+      <span className="status-dot"></span>
+      {isConnected ? 'Conectado en tiempo real' : 'Reconectando...'}
+    </div>
+  );
+
+  // Mostrar skeleton mientras se cargan los datos
+  if (isLoading) {
     return (
       <div className="caddie-turns-container">
         <div className="turns-header">
@@ -48,6 +139,7 @@ export const CaddieTurns: React.FC = () => {
     );
   }
 
+  // Renderizar sección de turnos para una lista específica
   const renderListTurns = (listNumber: ListNumber) => {
     const caddies = getListCaddies(listNumber);
 
@@ -60,9 +152,11 @@ export const CaddieTurns: React.FC = () => {
       );
     }
 
-    // Find current caddie (En campo)
-    const currentCaddie = caddies.find(c => c.status === 'En campo');
-    // Get next caddies in queue (Disponible)
+    // Encontrar el caddie actual (En campo)
+    // Usamos reverse() para encontrar el más reciente con status 'En campo'
+    const currentCaddie = [...caddies].reverse().find(c => c.status === 'En campo');
+    
+    // Obtener los próximos en cola (Disponible)
     const queueCaddies = caddies.filter(c => c.status === 'Disponible').slice(0, 3);
 
     return (
@@ -71,7 +165,7 @@ export const CaddieTurns: React.FC = () => {
           <h2><Icon name="golf" className="inline-icon" /> Lista {listNumber}</h2>
         </div>
 
-        {/* Current Turn Section */}
+        {/* Sección de turno actual */}
         <div className="current-turn-wrapper">
           {currentCaddie ? (
             <div className="current-turn">
@@ -92,7 +186,7 @@ export const CaddieTurns: React.FC = () => {
           )}
         </div>
 
-        {/* Queue Section */}
+        {/* Sección de cola */}
         {queueCaddies.length > 0 && (
           <div className="queue-section">
             <div className="queue-label">PRÓXIMOS EN COLA</div>
@@ -117,16 +211,13 @@ export const CaddieTurns: React.FC = () => {
       <div className="turns-header">
         <h1><Icon name="clipboard" className="title-icon" size={22} /> Turnos Actuales</h1>
         <p className="subtitle">Estado en tiempo real de los caddies</p>
+        {renderConnectionStatus()}
       </div>
 
       <div className="turns-grid">
         {renderListTurns(1)}
         {renderListTurns(2)}
         {renderListTurns(3)}
-      </div>
-
-      <div className="refresh-indicator">
-        <span className="dot"></span> Actualizándose automáticamente
       </div>
     </div>
   );

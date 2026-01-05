@@ -179,24 +179,48 @@
   margin: 1rem 0;
 }
 
-/* Refresh Indicator */
-.refresh-indicator {
+/* Connection Status */
+.connection-status {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-  margin-top: 1rem;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.refresh-indicator .dot {
+.connection-status.connected {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.connection-status.disconnected {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.connection-status .status-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background-color: #27ae60;
-  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.connection-status.connected .status-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.connection-status.disconnected .status-dot {
+  background-color: #ef4444;
+  animation: blink 1s ease-in-out infinite;
 }
 
 @keyframes pulse {
@@ -205,6 +229,15 @@
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
   }
 }
 
