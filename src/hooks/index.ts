@@ -40,3 +40,5 @@ export type { messagesQueryKeys } from './useMessages';
 
 export { useDailyReport, useRangeReport, useDownloadCSV } from './useReports';
 export type { reportsQueryKeys } from './useReports';
+
+export { useRealtimeData, useRefreshRealtimeData, usePrefetchRealtimeData, POLLING_INTERVAL } from './useRealtimeData';

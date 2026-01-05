@@ -66,6 +66,38 @@
 - Local state with `useState` for component-specific UI state
 - Toast notifications via `useToast()` hook
 
+## Real-Time Updates
+
+For real-time data on the main page, use polling with React Query:
+
+```typescript
+// Enable polling in useQuery hooks
+export function useCaddies(options?: Omit<UseQueryOptions<Caddie[]>, 'queryKey' | 'queryFn'>) {
+  return useQuery({
+    queryKey: caddiesQueryKeys.all,
+    queryFn: caddiesApi.getAll,
+    refetchInterval: 2000, // Poll every 2 seconds for fast updates across devices
+    ...options,
+  });
+}
+```
+
+Or use the `useRealtimeData` hook that combines all polling-enabled data:
+
+```typescript
+import { useRealtimeData } from '../hooks/useRealtimeData';
+
+function MyComponent() {
+  const { caddies, turns, getListCaddies, isLoading } = useRealtimeData();
+  // Data automatically updates every 2 seconds
+}
+```
+
+The main page (`CaddieTurns`) uses AppContext with `setInterval` polling:
+- Interval: 2 seconds (fast updates for multiple devices)
+- Calls `refreshData()` to fetch fresh data
+- Updates via `refreshKey` state to trigger re-render
+
 ## Error Handling
 
 - Use `ErrorBoundary` at app level for catching React errors

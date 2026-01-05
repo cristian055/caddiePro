@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import { Icon } from './ui/Icon';
 import { SkeletonBlock } from './ui/Skeleton';
 import type { ListNumber } from '../types';
 import './CaddieTurns.css';
 
+// Polling interval for real-time updates (2 seconds for fast updates across devices)
+const POLLING_INTERVAL = 2000;
+
 export const CaddieTurns: React.FC = () => {
-  const { getListCaddies, isLoading } = useApp();
+  const { getListCaddies, isLoading, refreshData } = useApp();
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Auto-refresh every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRefreshKey(prev => prev + 1);
-    }, 5000);
-
-    return () => clearInterval(interval);
+  // Polling function - refreshes data without full component remount
+  const pollData = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
   }, []);
+
+  // Set up polling interval
+  useEffect(() => {
+    const interval = setInterval(pollData, POLLING_INTERVAL);
+    return () => clearInterval(interval);
+  }, [pollData]);
+
+  // Initial data fetch
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
 
   // Show loading skeleton while data is loading
   if (isLoading) {

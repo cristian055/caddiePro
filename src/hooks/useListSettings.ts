@@ -2,6 +2,9 @@ import { useQuery, useMutation, useQueryClient, type UseQueryOptions } from '@ta
 import { listSettingsApi } from '../services/api';
 import type { ListSettings, QueueItem, UpdateListSettingsDto } from '../types';
 
+// Polling interval for real-time updates (2 seconds for fast updates across devices)
+export const POLLING_INTERVAL = 2000;
+
 // Query keys for React Query cache management
 export const listSettingsQueryKeys = {
   all: ['listSettings'] as const,
@@ -11,11 +14,12 @@ export const listSettingsQueryKeys = {
   queue: (listNumber: number) => [...listSettingsQueryKeys.queues(), listNumber] as const,
 } as const;
 
-// Get all list settings
+// Get all list settings with real-time polling
 export function useListSettings(options?: Omit<UseQueryOptions<ListSettings[]>, 'queryKey' | 'queryFn'>) {
   return useQuery({
     queryKey: listSettingsQueryKeys.all,
     queryFn: listSettingsApi.getAll,
+    refetchInterval: POLLING_INTERVAL, // Auto-refresh every 5 seconds
     ...options,
   });
 }
