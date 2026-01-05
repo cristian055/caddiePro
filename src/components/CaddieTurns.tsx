@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { Icon } from './ui/Icon';
 import { SkeletonBlock } from './ui/Skeleton';
@@ -9,27 +9,27 @@ import './CaddieTurns.css';
 const POLLING_INTERVAL = 2000;
 
 export const CaddieTurns: React.FC = () => {
-  const { getListCaddies, isLoading, refreshData } = useApp();
-  const [refreshKey, setRefreshKey] = useState(0);
+  const { getListCaddies, isLoading, refreshData, state } = useApp();
+  const isInitialMount = useRef(true);
 
-  // Polling function - refreshes data without full component remount
-  const pollData = useCallback(() => {
-    setRefreshKey(prev => prev + 1);
-  }, []);
-
-  // Set up polling interval
+  // Polling with actual data fetch
   useEffect(() => {
-    const interval = setInterval(pollData, POLLING_INTERVAL);
+    // Initial data fetch on mount
+    if (isInitialMount.current) {
+      refreshData();
+      isInitialMount.current = false;
+    }
+
+    // Set up polling interval to fetch fresh data
+    const interval = setInterval(() => {
+      refreshData();
+    }, POLLING_INTERVAL);
+
     return () => clearInterval(interval);
-  }, [pollData]);
-
-  // Initial data fetch
-  useEffect(() => {
-    refreshData();
   }, [refreshData]);
 
   // Show loading skeleton while data is loading
-  if (isLoading) {
+  if (isLoading && state.caddies.length === 0) {
     return (
       <div className="caddie-turns-container">
         <div className="turns-header">
@@ -113,7 +113,7 @@ export const CaddieTurns: React.FC = () => {
   };
 
   return (
-    <div className="caddie-turns-container" key={refreshKey}>
+    <div className="caddie-turns-container">
       <div className="turns-header">
         <h1><Icon name="clipboard" className="title-icon" size={22} /> Turnos Actuales</h1>
         <p className="subtitle">Estado en tiempo real de los caddies</p>
