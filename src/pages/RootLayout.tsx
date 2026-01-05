@@ -8,7 +8,7 @@ import './RootLayout.css';
 export const RootLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAdmin, logoutAdmin } = useApp();
+  const { isAdmin } = useApp();
 
   // Check if current route is the turns page
   const isTurnsPage = location.pathname === '/' || location.pathname === '/turns';

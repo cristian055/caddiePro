@@ -38,6 +38,17 @@
   margin-bottom:0.75rem;
 }
 
+.form-error{
+  color:#e74c3c;
+  font-size:0.875rem;
+  margin-top:-0.5rem;
+  margin-bottom:0.75rem;
+}
+
+.input-field--error{
+  border-color:#e74c3c !important;
+}
+
 .actions{
   display:flex;
   justify-content:flex-end;

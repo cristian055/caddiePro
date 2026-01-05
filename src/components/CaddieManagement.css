@@ -54,6 +54,20 @@
   box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
 }
 
+.input-field--error {
+  border-color: var(--color-danger);
+}
+
+.input-field--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-error {
+  color: var(--color-danger);
+  font-size: var(--type-xs);
+  margin-top: -4px;
+}
+
 .caddies-by-list {
   display: grid;
   gap: 20px;

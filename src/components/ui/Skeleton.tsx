@@ -173,6 +173,7 @@ export function SkeletonInput({
 interface BlockSkeletonProps extends BaseSkeletonProps {
   width?: string | number;
   height?: string | number;
+  style?: React.CSSProperties;
 }
 
 export function SkeletonBlock({
@@ -180,11 +181,12 @@ export function SkeletonBlock({
   height,
   className = '',
   variant = 'light',
+  style,
 }: BlockSkeletonProps) {
   return (
     <div
       className={`skeleton-block ${className} skeleton--${variant}`}
-      style={{ width, height }}
+      style={{ width, height, ...style }}
     />
   );
 }

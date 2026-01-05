@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import Icon from './ui/Icon';
+import { Icon } from './ui/Icon';
+import { SkeletonBlock } from './ui/Skeleton';
 import type { ListNumber } from '../types';
 import './CaddieTurns.css';
 
 export const CaddieTurns: React.FC = () => {
-  const { getListCaddies } = useApp();
+  const { getListCaddies, isLoading } = useApp();
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Auto-refresh every 5 seconds
@@ -16,6 +17,26 @@ export const CaddieTurns: React.FC = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Show loading skeleton while data is loading
+  if (isLoading) {
+    return (
+      <div className="caddie-turns-container">
+        <div className="turns-header">
+          <SkeletonBlock width={200} height={32} variant="light" />
+          <SkeletonBlock width={280} height={20} variant="light" style={{ marginTop: 8 }} />
+        </div>
+        <div className="turns-grid">
+          {[1, 2, 3].map(num => (
+            <div key={num} className="list-turn-section">
+              <SkeletonBlock width={120} height={28} variant="light" style={{ marginBottom: 16 }} />
+              <SkeletonBlock width="100%" height={100} variant="light" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const renderListTurns = (listNumber: ListNumber) => {
     const caddies = getListCaddies(listNumber);

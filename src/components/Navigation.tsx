@@ -1,17 +1,43 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import { useApp } from '../context/AppContext';
+import { useToast } from './ToastProvider';
 import './Navigation.css';
 
 export const Navigation: React.FC = () => {
   const { isAdmin, logoutAdmin } = useApp();
+  const { showToast } = useToast();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [wasAdmin, setWasAdmin] = useState(isAdmin);
+
+  // Show toast when admin state changes
+  useEffect(() => {
+    if (isAdmin && !wasAdmin) {
+      showToast('Sesión de administrador iniciada', 'success');
+      setWasAdmin(true);
+    } else if (!isAdmin && wasAdmin) {
+      showToast('Sesión cerrada correctamente', 'info');
+      setWasAdmin(false);
+    }
+  }, [isAdmin, wasAdmin, showToast]);
 
   const handleLogout = async () => {
     await logoutAdmin();
     setIsOpen(false);
+  };
+
+  // Get current page title for header
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/') return 'Turnos';
+    if (path === '/dashboard') return 'Panel';
+    if (path === '/caddies') return 'Caddies';
+    if (path === '/attendance') return 'Asistencia';
+    if (path === '/messaging') return 'Mensajes';
+    if (path === '/reports') return 'Reportes';
+    return 'CaddiePro';
   };
 
   return (
@@ -71,7 +97,7 @@ export const Navigation: React.FC = () => {
                 to="/reports"
                 className={`navigation__link ${location.pathname.startsWith('/reports') ? 'navigation__link--active' : ''}`}
               >
-                <Icon name="arrow-left" size={18} />
+                <Icon name="chart" size={18} />
                 <span>Reportes</span>
               </Link>
             </>
@@ -81,7 +107,7 @@ export const Navigation: React.FC = () => {
         {/* User Menu */}
         <div className="navigation__user-menu">
           <button
-            className="navigation__user-toggle"
+            className={`navigation__user-toggle ${isAdmin ? 'navigation__user-toggle--admin' : ''}`}
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Menú de usuario"
             aria-expanded={isOpen}
@@ -90,7 +116,7 @@ export const Navigation: React.FC = () => {
             {isAdmin && (
               <span className="navigation__admin-badge">
                 <Icon name="lock" size={12} />
-                Admin
+                <span>Admin</span>
               </span>
             )}
           </button>
@@ -100,11 +126,19 @@ export const Navigation: React.FC = () => {
               {isAdmin ? (
                 <>
                   <div className="navigation__user-info">
-                    <span className="navigation__user-status">
-                      <Icon name="lock" size={14} />
-                      Modo administrador
-                    </span>
+                    <div className="navigation__user-avatar">
+                      <Icon name="lock" size={18} />
+                    </div>
+                    <div className="navigation__user-details">
+                      <span className="navigation__user-name">Administrador</span>
+                      <span className="navigation__user-status">
+                        <span className="navigation__status-dot navigation__status-dot--online"></span>
+                        Conectado
+                      </span>
+                    </div>
                   </div>
+
+                  <div className="navigation__dropdown-divider" />
 
                   <button
                     className="navigation__logout-btn"
@@ -116,15 +150,26 @@ export const Navigation: React.FC = () => {
                 </>
               ) : (
                 <div className="navigation__user-info">
-                  <span className="navigation__user-status">
-                    <Icon name="lock" size={14} />
-                    Usuario
-                  </span>
+                  <div className="navigation__user-avatar navigation__user-avatar--guest">
+                    <Icon name="settings" size={18} />
+                  </div>
+                  <div className="navigation__user-details">
+                    <span className="navigation__user-name">Usuario</span>
+                    <span className="navigation__user-status">
+                      <span className="navigation__status-dot"></span>
+                      Modo visitante
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
           )}
         </div>
+      </div>
+
+      {/* Mobile page title indicator */}
+      <div className="navigation__mobile-title">
+        {getPageTitle()}
       </div>
     </nav>
   );

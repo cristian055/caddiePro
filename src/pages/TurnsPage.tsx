@@ -2,13 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import { CaddieTurns } from '../components/CaddieTurns';
 import { Button } from '../components/ui/Button';
 import { Icon } from '../components/ui/Icon';
+import { useApp } from '../context/AppContext';
 import './TurnsPage.css';
 
 export const TurnsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { isAdmin } = useApp();
 
-  const handleAdminLogin = () => {
-    navigate('/login');
+  const handleAdminAccess = () => {
+    // If already admin, go directly to dashboard, otherwise show login
+    navigate(isAdmin ? '/dashboard' : '/login');
   };
 
   return (
@@ -18,13 +21,15 @@ export const TurnsPage: React.FC = () => {
         <Button
           variant="default"
           className="admin-access-btn"
-          onClick={handleAdminLogin}
-          aria-label="Acceso administrador"
+          onClick={handleAdminAccess}
+          aria-label={isAdmin ? 'Ir al panel de administrador' : 'Acceso administrador'}
         >
-          <Icon name="lock" size={18} />
-          <span>Acceso Administrador</span>
+          <Icon name={isAdmin ? 'chart' : 'lock'} size={18} />
+          <span>{isAdmin ? 'Ir al Panel' : 'Acceso Administrador'}</span>
         </Button>
-        <span className="admin-access-hint">Iniciar sesión como administrador para acceder al panel</span>
+        <span className="admin-access-hint">
+          {isAdmin ? 'Haz clic para acceder al panel de administración' : 'Iniciar sesión como administrador para acceder al panel'}
+        </span>
       </div>
 
       <CaddieTurns />

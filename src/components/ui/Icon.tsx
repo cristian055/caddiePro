@@ -11,7 +11,9 @@ type IconName =
   | 'settings'
   | 'arrow-left'
   | 'clipboard'
-  | 'check';
+  | 'check'
+  | 'x'
+  | 'arrow-back';
 
 export const Icon: React.FC<{ name: IconName; className?: string; size?: number }> = ({ name, className = '', size = 18 }) => {
   const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' } as any;
@@ -82,6 +84,18 @@ export const Icon: React.FC<{ name: IconName; className?: string; size?: number 
         <svg {...common} className={className}>
           <path d="M9 2h6a2 2 0 012 2v1H7V4a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.2" fill="none" />
           <rect x="3" y="7" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.2" fill="none" />
+        </svg>
+      );
+    case 'x':
+      return (
+        <svg {...common} className={className}>
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </svg>
+      );
+    case 'arrow-back':
+      return (
+        <svg {...common} className={className}>
+          <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
       );
     default:

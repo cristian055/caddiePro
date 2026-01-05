@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import Icon from './ui/Icon';
+import { Icon } from './ui/Icon';
 import type { ListNumber } from '../types';
+import { createCaddieSchema, validateForm } from '../utils/validation';
 import './CaddieManagement.css';
 
 export const CaddieManagement: React.FC = () => {
@@ -11,26 +12,51 @@ export const CaddieManagement: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [editList, setEditList] = useState<ListNumber>(1);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
 
   const handleAddCaddie = async () => {
-    if (name.trim()) {
-      await addCaddie(name.trim(), selectedList);
-      setName('');
-      setSelectedList(1);
+    const validation = validateForm(createCaddieSchema, {
+      name,
+      listNumber: selectedList,
+      phoneNumber: '',
+      status: 'Disponible',
+    });
+
+    if (!validation.valid) {
+      setErrors(validation.errors);
+      return;
     }
+
+    setErrors({});
+    await addCaddie(name.trim(), selectedList);
+    setName('');
+    setSelectedList(1);
   };
 
   const handleEditStart = (id: string, currentName: string, currentList: ListNumber) => {
     setEditingId(id);
     setEditName(currentName);
     setEditList(currentList);
+    setEditErrors({});
   };
 
   const handleEditSave = async (id: string) => {
-    if (editName.trim()) {
-      await editCaddie(id, editName.trim(), editList);
-      setEditingId(null);
+    const validation = validateForm(createCaddieSchema, {
+      name: editName,
+      listNumber: editList,
+      phoneNumber: '',
+      status: 'Disponible',
+    });
+
+    if (!validation.valid) {
+      setEditErrors(validation.errors);
+      return;
     }
+
+    setEditErrors({});
+    await editCaddie(id, editName.trim(), editList);
+    setEditingId(null);
   };
 
   const caddiesByList = {
@@ -49,9 +75,14 @@ export const CaddieManagement: React.FC = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nombre del caddie"
-          className="input-field"
+          className={`input-field ${errors.name ? 'input-field--error' : ''}`}
           onKeyPress={(e) => e.key === 'Enter' && handleAddCaddie()}
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? 'name-error' : undefined}
         />
+        {errors.name && (
+          <span id="name-error" className="form-error">{errors.name}</span>
+        )}
         <select
           value={selectedList}
           onChange={(e) => setSelectedList(Number(e.target.value) as ListNumber)}
@@ -82,8 +113,12 @@ export const CaddieManagement: React.FC = () => {
                           type="text"
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
-                          className="input-field"
+                          className={`input-field ${editErrors.name ? 'input-field--error' : ''}`}
+                          aria-invalid={!!editErrors.name}
                         />
+                        {editErrors.name && (
+                          <span className="form-error">{editErrors.name}</span>
+                        )}
                         <select
                           value={editList}
                           onChange={(e) => setEditList(Number(e.target.value) as ListNumber)}
