@@ -48,3 +48,84 @@
     left: 10px;
   }
 }
+
+/* ===============================
+   Admin Access Button Styles
+   =============================== */
+.turns-page__admin-access {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+}
+
+.admin-access-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+  transition: all 0.2s;
+}
+
+.admin-access-btn:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.25);
+}
+
+.admin-access-btn .btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-access-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-left: 4px;
+}
+
+.turns-page__admin-badge {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background-color: var(--color-admin-badge);
+  color: white;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 99;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.turns-page__admin-badge .icon {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 640px) {
+  .turns-page__admin-access,
+  .turns-page__admin-badge {
+    right: 16px;
+  }
+
+  .admin-access-btn,
+  .turns-page__admin-badge {
+    padding: 10px 16px;
+  }
+
+  .admin-access-hint {
+    font-size: 0.7rem;
+  }
+}

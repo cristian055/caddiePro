@@ -1,0 +1,48 @@
+/* ===============================
+   Logout Confirmation
+   =============================== */
+.logout-confirmation {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.logout-confirmation__icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.logout-confirmation__message {
+  font-size: 1rem;
+  color: var(--color-text);
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+}
+
+.logout-confirmation__warning {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  background-color: rgba(239, 94, 6, 0.1);
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin: 0 0 24px 0;
+}
+
+/* Danger button style for logout */
+.btn-danger {
+  background-color: var(--color-danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: var(--color-danger-light);
+}

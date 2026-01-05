@@ -31,26 +31,7 @@ export const RootLayout: React.FC = () => {
           <p className="tagline">Sistema de Gestión de Turnos de Caddies</p>
         </div>
         
-        {isTurnsPage && (
-          <Button
-            className="admin-toggle-btn"
-            onClick={() => {
-              if (isAdmin) {
-                logoutAdmin();
-                navigate('/');
-              } else {
-                navigate('/login');
-              }
-            }}
-            title={isAdmin ? 'Salir del modo administrador' : 'Acceso administrador'}
-          >
-            {isAdmin ? (
-              <><Icon name="lock" className="btn-icon" /> Salir Admin</>
-            ) : (
-              <><Icon name="settings" className="btn-icon" /> Admin</>
-            )}
-          </Button>
-        )}
+
       </header>
 
       {/* Show navigation only on admin/dashboard pages */}

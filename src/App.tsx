@@ -4,6 +4,7 @@ import { RootLayout } from './pages/RootLayout';
 import { TurnsPage } from './pages/TurnsPage';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
+import { Navigation } from './components/Navigation';
 import { AppProvider } from './context/AppContext';
 import './App.css';
 
@@ -13,8 +14,11 @@ const App: React.FC = () => {
       <Router>
         <Routes>
           <Route element={<RootLayout />}>
+            {/* Navigation bar with user menu and admin access */}
+            <Route path="/" element={<Navigation />} />
+
             {/* Main default page - Turns */}
-            <Route path="/" element={<TurnsPage />} />
+            <Route index element={<TurnsPage />} />
             <Route path="/turns" element={<TurnsPage />} />
 
             {/* Login for admin */}
